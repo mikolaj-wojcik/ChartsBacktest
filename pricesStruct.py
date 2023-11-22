@@ -34,7 +34,6 @@ def generatePriceListFromDf(dataframe: pd.DataFrame) ->list :
     dateFormatNoTime = '%Y-%m-%d'
     for ind in dataframe.index:
         dateString = str(dataframe['timestamp'][ind])
-        print (dateString)
         if re.search('\s', dateString) != None :
             date = datetime.strptime(dateString, dateFormatWithTime)
         else:

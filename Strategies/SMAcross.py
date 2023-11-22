@@ -1,27 +1,37 @@
 import pandas as pd
 import Indicators.SMA as SMA
 import Transaction
+import Strategies.Strategy as strat
 
-class SMAcross:
-    openPostitions = []
-    shortInterval = 0
-    longInterval = 0
-    lastShort = 0
+class SMAcross (strat.Strategy):
+   
     
 
-    def __init__(self):
+    def __init__(self, shortSMA=7, longSMA=14, min_position=1):
+        super().__init__
+        super().indicators['short'] = SMA.SMA(shortSMA)
+        super().indicators['longSMA'] = SMA.SMA(longSMA)
+        self.openPostitions = []
+        self.lastShort = 0.0
+        self.lastLong = 0.0
+        self.min_position = min_position
         pass
 
     def run(self, prices, balance, shortInterval, longInterval):
-        self.shortInterval = shortInterval
-        self.longInterval = longInterval
-
-        for i in range(len(prices)):
-            print(list[i])
-
-
-        return balance
+        pass
     
-    def onTick(self, price, budget, ):
-        recomendation: str
-        return recomendation, size
+    def onTick(self, price, budget=None):
+        super().onTick(price.close)
+        currentShort = super().indicators['short'].value
+        currentLong = super().indicators['longSMA'].value
+        recomendation =0
+        #print("SMA7=", currentShort, "SMA14=", currentLong)
+        if(currentShort > currentLong):
+            if (self.lastShort <= self.lastLong):
+                recomendation = 1
+        if(currentShort < currentLong):
+            if (self.lastShort >= self.lastLong):
+                recomendation = 2
+        self.lastShort = currentShort
+        self.lastLong = currentLong
+        return recomendation, 0.0, 0.0
