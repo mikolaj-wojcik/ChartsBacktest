@@ -21,4 +21,6 @@ def load_URLStock(userKey, ticker, market='', interval =0, startDate = 0, stopDa
     data, meta_data = ts.get_daily(ticker, outputsize='full')
     data.reset_index(inplace=True)
     data = data.rename(columns= {'date' : 'timestamp', '2. high': 'high', '3. low': 'low','1. open': 'open','4. close': 'close'})
-    return pricesStruct.generatePriceListFromDf(data)
+    
+    return data
+    #return pricesStruct.generatePriceListFromDf(data)

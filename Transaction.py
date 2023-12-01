@@ -1,16 +1,21 @@
+import math
 
-
-def buy(positions, balance, price,allowShort = False, size = 1.0):
+def buy(positions, balance, price, transactionHistory, allowShort = False, size = 1.0):
     if(allowShort):
+
+
         pass
     else:
         if(size*price < balance):
             positions.append((size,price))
             balance -= price*size
+        else:
+            balance-= math.floor(balance/size) * price
+            positions.append(math.floor(balance/size), price)
     return balance, positions
    
 
-def sell(positions, balance, price, allowShort = False,size = 1.0):
+def sell(positions, balance, price, transactionHistory, allowShort = False,size = 1.0):
     if(allowShort):
         pass
     else:
@@ -30,10 +35,15 @@ def sell(positions, balance, price, allowShort = False,size = 1.0):
     
 
 
-def closeAllPositions(positions, balance, lastPrice):
-    for pos in positions:
-        balance += pos[0] * lastPrice
-    return balance
+def closeAllPositions(positions, balance, lastPrice,toClose):
+    assetsVal = 0.0
+    if(toClose):
+        for pos in positions:
+            balance += pos[0] * lastPrice
+    else:
+        for pos in positions:
+            assetsVal += pos[0] * lastPrice
+    return balance, assetsVal
 
 def checkForStopOut(balance, postions, lastPrice):
 

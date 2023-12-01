@@ -2,28 +2,42 @@ import pandas as pd
 import Indicators.SMA as SMA
 import Transaction
 import Strategies.Strategy as strat
+from ta.trend import SMAIndicator 
+
 
 class SMAcross (strat.Strategy):
    
     
 
-    def __init__(self, shortSMA=7, longSMA=14, min_position=1):
-        super().__init__
-        super().indicators['short'] = SMA.SMA(shortSMA)
-        super().indicators['longSMA'] = SMA.SMA(longSMA)
-        self.openPostitions = []
+    def __init__(self, prices = None,indicatorsParams = {'shortSMA':7, 'longSMA':14}, min_position=1):
+        super().__init__(prices = prices)
+        self.indicatorsParams = indicatorsParams
+        
         self.lastShort = 0.0
         self.lastLong = 0.0
         self.min_position = min_position
+        if(prices!=None):
+            self.calculateIndicators()
         pass
 
-    def run(self, prices, balance, shortInterval, longInterval):
+    
+
+    def calculateIndicators(self):
+        SMA_short = SMAIndicator(self.prices['close'], self.indicatorsParams['shortSMA'])
+        SMA_long = SMAIndicator(self.prices['close'], self.indicatorsParams['longSMA'])
+        self.prices['SMAshort'] = SMA_short.sma_indicator()
+        self.prices['SMAlong'] = SMA_long.sma_indicator()
+
+    def loadPrices(self, prices):
+        super().setPrices(prices)
+        self.calculateIndicators()
         pass
     
-    def onTick(self, price, budget=None):
-        super().onTick(price.close)
-        currentShort = super().indicators['short'].value
-        currentLong = super().indicators['longSMA'].value
+    def onTick(self, iter, budget=None):
+        pricesRow = super().onTick(iter)
+        currentShort = pricesRow['SMAshort']
+        currentLong = pricesRow['SMAlong']
+        price = pricesRow['close']
         recomendation =0
         #print("SMA7=", currentShort, "SMA14=", currentLong)
         if(currentShort > currentLong):
@@ -34,4 +48,4 @@ class SMAcross (strat.Strategy):
                 recomendation = 2
         self.lastShort = currentShort
         self.lastLong = currentLong
-        return recomendation, 0.0, 0.0
+        return recomendation, price, 0.0, 0.0

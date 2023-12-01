@@ -3,11 +3,16 @@ import Indicators
 class Strategy:
     indicators = {}
 
-    def __init__ (self):
+    def __init__ (self, prices):
+
+        self.prices = prices
         pass
 
-    def onTick(self, price):
-        self.updateIndicators(price)
+    def setPrices(self, prices):
+        self.prices = prices
+
+    def onTick(self, iter):
+        return self.prices.iloc[iter]
 
     def updateIndicators(self, price):
         for indk, indv in self.indicators.items():
