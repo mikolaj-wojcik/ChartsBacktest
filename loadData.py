@@ -11,7 +11,7 @@ def load_csv(CSVpath = r'C:\Users\Mikolaj\Downloads\daily_IBM.csv'):
     
     data = pd.read_csv(CSVpath)
 
-    return pricesStruct.generatePriceListFromDf(data)
+    return data #pricesStruct.generatePriceListFromDf(data)
 
 def load_URLStock(userKey, ticker, market='', interval =0, startDate = 0, stopDate = datetime.datetime.now()):
      

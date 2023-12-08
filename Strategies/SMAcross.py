@@ -7,7 +7,7 @@ from ta.trend import SMAIndicator
 
 class SMAcross (strat.Strategy):
    
-    
+    paramsDict = {'shortSMA' : 0, 'longSMA':0}
 
     def __init__(self, prices = None,indicatorsParams = {'shortSMA':7, 'longSMA':14}, min_position=1):
         super().__init__(prices = prices)
@@ -21,6 +21,13 @@ class SMAcross (strat.Strategy):
         pass
 
     
+    def setParams(self, indicatorParams):
+
+        self.indicatorParams = indicatorParams
+        self.lastShort = 0.0
+        self.lastLong = 0.0
+        if(not self.prices.empty):
+            self.calculateIndicators()
 
     def calculateIndicators(self):
         SMA_short = SMAIndicator(self.prices['close'], self.indicatorsParams['shortSMA'])
@@ -30,6 +37,7 @@ class SMAcross (strat.Strategy):
 
     def loadPrices(self, prices):
         super().setPrices(prices)
+        print(self.indicatorsParams)
         self.calculateIndicators()
         pass
     

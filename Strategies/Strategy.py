@@ -1,11 +1,14 @@
 import Indicators
+import pandas as pd
 
 class Strategy:
     indicators = {}
 
     def __init__ (self, prices):
-
-        self.prices = prices
+        if(prices != None):
+            self.prices = prices
+        else:
+            self.prices = pd.DataFrame()
         pass
 
     def setPrices(self, prices):
