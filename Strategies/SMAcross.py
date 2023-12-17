@@ -12,7 +12,6 @@ class SMAcross (strat.Strategy):
     def __init__(self, prices = None,indicatorsParams = {'shortSMA':7, 'longSMA':14}, min_position=1):
         super().__init__(prices = prices)
         self.indicatorsParams = indicatorsParams
-        
         self.lastShort = 0.0
         self.lastLong = 0.0
         self.min_position = min_position
@@ -22,8 +21,7 @@ class SMAcross (strat.Strategy):
 
     
     def setParams(self, indicatorParams):
-
-        self.indicatorParams = indicatorParams
+        self.indicatorsParams = indicatorParams
         self.lastShort = 0.0
         self.lastLong = 0.0
         if(not self.prices.empty):
@@ -37,7 +35,6 @@ class SMAcross (strat.Strategy):
 
     def loadPrices(self, prices):
         super().setPrices(prices)
-        print(self.indicatorsParams)
         self.calculateIndicators()
         pass
     
@@ -56,4 +53,4 @@ class SMAcross (strat.Strategy):
                 recomendation = 2
         self.lastShort = currentShort
         self.lastLong = currentLong
-        return recomendation, price, 0.0, 0.0
+        return recomendation, price, 100.0, 100.0

@@ -9,6 +9,7 @@ import loadData
 import Strategies.SMAcross as Strat
 import RunStrategy.RunStrategy as Run
 from RunStrategy.StartegyGrid import StartegyGrid
+from SelectStrategy import SelectStrategy
 
 if __name__ == "__main__":
     # Get json object with the intraday data and another with  the call's metadata
@@ -18,9 +19,11 @@ if __name__ == "__main__":
     prices = loadData.load_csv()
     #ru = Run.RunStrategy(prices, Strat.SMAcross())
     #ru.runStrategy()
-    grid = StartegyGrid(Strat.SMAcross(), prices)
-    grid.setGrid()
-    list = grid.runGrid()
+    strat = SelectStrategy(True)
+    if(strat != 0):
+        grid = StartegyGrid(strat, prices)
+        grid.setGrid()
+        list = grid.runGrid()
     #print(list)
     #print(data.dtypes)
     #print(data)

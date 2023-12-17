@@ -39,7 +39,7 @@ class StartegyGrid():
         if keys is None:
             keys = list(params_dict.keys())
         if not keys:
-            print(current_combination)
+           # print(current_combination)
             self.strategy.setParams(current_combination)
             self.run.setStrategy(self.strategy)
             temp = current_combination.copy()
