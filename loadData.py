@@ -3,6 +3,7 @@ import yfinance as yf
 import requests
 import datetime
 import pricesStruct
+import pricesStruct
 from alpha_vantage.timeseries import TimeSeries
 from alpha_vantage.cryptocurrencies import CryptoCurrencies
 from alpha_vantage.foreignexchange import ForeignExchange
