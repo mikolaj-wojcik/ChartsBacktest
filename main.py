@@ -1,10 +1,10 @@
 import pandas as pd
-import yfinance as yf
+#import yfinance as yf
 import requests
 import datetime
-from alpha_vantage.timeseries import TimeSeries
-from alpha_vantage.cryptocurrencies import CryptoCurrencies
-from alpha_vantage.foreignexchange import ForeignExchange
+#from alpha_vantage.timeseries import TimeSeries
+#from alpha_vantage.cryptocurrencies import CryptoCurrencies
+#from alpha_vantage.foreignexchange import ForeignExchange
 import loadData
 import Strategies.SMAcross as Strat
 import RunStrategy.RunStrategy as Run
@@ -24,6 +24,7 @@ if __name__ == "__main__":
         grid = StartegyGrid(strat, prices)
         grid.setGrid()
         list = grid.runGrid()
+
     #print(list)
     #print(data.dtypes)
     #print(data)

@@ -16,7 +16,16 @@ class Transaction():
         self.floatingPL =0.0
         self.positions= []
         self.history=[]
-     
+
+    def buy(self, price,candle, transactionHistory,  size = 1.0,takeProfit = 0.0, stopLoss = 0.0):
+        pass
+
+    def sell(self, price, candle, transactionHistory, size=1.0, takeProfit=0.0, stopLoss=0.0):
+        pass
+
+    def closeAllPositions(self, positions, balance, candle, lastPrice, toClose):
+        pass
+
     def close(self, positions, balance, size, closeBuy,candle,  price, leverage = 1):
         if(closeBuy): #close buy
             while(size < 0):
@@ -285,7 +294,7 @@ class Lewerage(Transaction):
 
         return self.balance, self.positions
     
-   # def calculateMargin(self, price): #retur True if no positio reductio is required
+    def calculateMargin(self, price): #retur True if no positio reductio is required
         margin = 0.0
         ogMargin = 0.0
         if(len(self.positions) != 0 ):

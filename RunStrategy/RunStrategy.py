@@ -11,8 +11,9 @@ class RunStrategy:
         self.positionsList = []
         self.transactionHistory = []
         self.closeAllAfter = toClose
-        self.transaction = Lewerage(startBalance, leverage= 100)
-        #self.transaction = NoLewerage(startBalance)
+        self.balanceTrack = []
+        #self.transaction = Lewerage(startBalance, leverage= 100)
+        self.transaction = NoLewerage(startBalance)
         self.setStrategy(startegy)
         pass
 
@@ -38,7 +39,8 @@ class RunStrategy:
         lastClose= 0.0
         recomendation = 0
         for ind in self.priceList.index:
-            self.balance, self.positionsList = self.transaction.checkForStopOut(candle=ind, price=self.priceList['open'][ind], lastPrice=self.priceList.iloc[ind-1])
+            if self.transaction.__class__ == Lewerage:
+                self.balance, self.positionsList = self.transaction.checkForStopOut(candle=ind, price=self.priceList['open'][ind], lastPrice=self.priceList.iloc[ind-1])
             if(recomendation == 1):
                 self.balance, self.positionsList = self.transaction.buy(price= self.priceList['open'][ind], candle=ind, transactionHistory = self.transactionHistory, takeProfit = take_profit,stopLoss=stop_loss) 
                 #print(self.positionsList)
@@ -51,7 +53,8 @@ class RunStrategy:
             #self.balance, self.positionsList = self.transaction.checkForSlTp(candle=ind,price=self.priceList['open'][ind],lastPrice=self.priceList.iloc[ind])
             
             #print(self.balance)
-            
+            self.balanceTrack.append(self.balance + sum(float(quantity*self.priceList['close'][ind])  for quantity, opPrice in self.positionsList))
+            #print(self.balanceTrack)
             lastClose = self.priceList['close'][ind]
             pass
         self.balance, assets = self.transaction.closeAllPositions(positions=self.positionsList, balance= self.balance, candle = ind,lastPrice= lastClose, toClose = self.closeAllAfter)

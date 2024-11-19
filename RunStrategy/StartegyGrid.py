@@ -43,7 +43,7 @@ class StartegyGrid():
             self.strategy.setParams(current_combination)
             self.run.setStrategy(self.strategy)
             temp = current_combination.copy()
-            self.resultList.append((temp, self.run.runStrategy()))
+            self.resultList.append((temp, self.run.runStrategy())) #<- running strategy
             return
 
         current_key = keys[0]
