@@ -1,5 +1,5 @@
 from RunStrategy import RunStrategy
-
+#from Statistics.CalculateStatistic import CalculateStatistic
 
 
 class StartegyGrid():
@@ -31,6 +31,8 @@ class StartegyGrid():
         
         self.generate_combinations(self.paramGrid)
 
+
+
         return  self.resultList
         
     def generate_combinations(self, params_dict, current_combination=None, keys=None):
@@ -43,7 +45,7 @@ class StartegyGrid():
             self.strategy.setParams(current_combination)
             self.run.setStrategy(self.strategy)
             temp = current_combination.copy()
-            self.resultList.append((temp, self.run.runStrategy())) #<- running strategy
+            self.resultList.append((temp, self.run.runStrategy())) #<- running strategy Combination + balance + assets + transactionhistory + balanceHistory
             return
 
         current_key = keys[0]

@@ -63,7 +63,7 @@ class RunStrategy:
         #    print("Value of assets: ", assets)
         #print(self.positionsList)
         print(self.transaction.history)
-        return self.balance, assets
+        return self.balance, assets, self.transactionHistory, self.balanceTrack
     
 
 
