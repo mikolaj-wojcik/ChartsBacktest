@@ -1,4 +1,4 @@
-from Strategies.SMAcross import SMAcross
+#from Strategies.SMAcross import SMAcross
 import importlib
 
 
@@ -19,6 +19,6 @@ def    SelectStrategy(select):
         
         
     else:
-        module = SMAcross()
+      #  module = SMAcross()
         pass
     return module

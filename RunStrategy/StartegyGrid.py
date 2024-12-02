@@ -45,7 +45,7 @@ class StartegyGrid():
             self.strategy.setParams(current_combination)
             self.run.setStrategy(self.strategy)
             temp = current_combination.copy()
-            self.resultList.append((temp, self.run.runStrategy())) #<- running strategy Combination + balance + assets + transactionhistory + balanceHistory
+            self.resultList.append((temp, self.run.runStrategy())) #<- running strategy Combination + balance + assets + transactionhistory + df_prices_balanceHistory
             return
 
         current_key = keys[0]

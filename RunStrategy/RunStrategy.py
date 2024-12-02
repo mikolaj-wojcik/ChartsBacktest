@@ -36,6 +36,7 @@ class RunStrategy:
         self.transaction.reset()
         self.positionsList =[]
         self.transactionHistory = []
+        self.balanceTrack = []
         lastClose= 0.0
         recomendation = 0
         for ind in self.priceList.index:
@@ -63,7 +64,9 @@ class RunStrategy:
         #    print("Value of assets: ", assets)
         #print(self.positionsList)
         print(self.transaction.history)
-        return self.balance, assets, self.transactionHistory, self.balanceTrack
+        tmp_prices = self.priceList.copy()
+        tmp_prices['portfolio_value'] = self.balanceTrack
+        return self.balance, assets, self.transactionHistory, tmp_prices
     
 
 

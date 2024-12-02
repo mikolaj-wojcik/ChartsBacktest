@@ -3,8 +3,6 @@ import pandas as pd
 import requests
 import datetime
 
-from samba.dcerpc.nbt import statistics
-
 #from alpha_vantage.timeseries import TimeSeries
 #from alpha_vantage.cryptocurrencies import CryptoCurrencies
 #from alpha_vantage.foreignexchange import ForeignExchange
@@ -27,10 +25,12 @@ if __name__ == "__main__":
     if(strat != 0):
         grid = StartegyGrid(strat, prices)
         grid.setGrid()
-        list = grid.runGrid()
+        list_strat = grid.runGrid()
         statistics = CalculateStatistic()
+        statistics.select_stats()
+        for strat in list_strat:
+            drawdown = statistics.calculate_performance(strat[1][3])
 
-        statistics.calculate(list, statistics.selectStats())
 
     #print(list)
     #print(data.dtypes)
