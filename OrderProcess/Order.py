@@ -3,7 +3,7 @@ from enum import Enum
 
 
 class Order():
-    def __init__(self, size, side, oType,protectionOrder :dict,  price=0.0, candle = None,  ) -> None:
+    def __init__(self, size, side, oType,protectionOrder :dict,  price=0.0, candle = None, commission = 0  ) -> None:
         self.price = price
         self.size = size
         self.candle  = candle
@@ -13,6 +13,7 @@ class Order():
         self.orderType = oType
         self.stopLoss =0.0
         self.takeProfit = 0.0
+        self.commission = commission
        # if(protectionOrder):
         if protectionOrder['stop loss'] != 0.0:
             if((self.direction == Direction.BUY and self.price > protectionOrder['stop loss']) or (self.direction == Direction.SELL and self.price <protectionOrder['stop loss'])):
@@ -95,7 +96,12 @@ class Order():
 
         return returnPrice
 
-
+class ClosedOrder():
+    def __init__(self, candle, size, price, commission ):
+        self.candle = candle
+        self.size = size
+        self.price = price
+        self.commission = commission
 
 class Direction(Enum):
     BUY = 'buy'

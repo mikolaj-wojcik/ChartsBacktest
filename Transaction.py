@@ -1,5 +1,8 @@
 import math
 
+from OrderProcess.Order import ClosedOrder
+
+
 class Transaction():
     def __init__(self, balance, positions, leverage):
         self.history =[] ###candle number, size, price of trasaction, 
@@ -9,6 +12,8 @@ class Transaction():
         self.equity = balance
         self.floatingPL = 0.0
         self.startBalance = balance
+        self.min_commission = 1.0
+        self.commission_factor =0.0
         pass
 
     def reset(self):
@@ -25,6 +30,9 @@ class Transaction():
 
     def closeAllPositions(self, positions, balance, candle, lastPrice, toClose):
         pass
+
+    def commission(self, value):
+      return max(value * self.commission_factor, self.min_commission)
 
     def close(self, positions, balance, size, closeBuy,candle,  price, leverage = 1):
         if(closeBuy): #close buy
@@ -59,7 +67,7 @@ class Transaction():
                 else:
                     break 
 
-        return positions, balance, size
+        return positions, balance, size, commission
      
 
     def selectLowPrice(self,  orderPrice, lastPrice, price):
@@ -134,14 +142,16 @@ class NoLewerage(Transaction):
 
 
     def buy(self, price,candle, transactionHistory,  size = 1.0,takeProfit = 0.0, stopLoss = 0.0):
+        potential_commission = self.commission(size * price)
         if(size*price < self.balance):
                 self.positions.append((size,price))
-                self.balance -= price*size
-                self.history.append((candle, size, price))
+                self.balance -= (price*size + potential_commission)
+                self.history.append(ClosedOrder(candle, size, price, potential_commission))
         else:
-                self.balance-= math.floor(self.balance/size) * price
+                potential_commission = self.commission(math.floor(self.balance/size) * price)
+                self.balance-= math.floor(self.balance/size) * price + potential_commission
                 self.positions.append(math.floor(self.balance/size), price, takeProfit,stopLoss)
-                self.history.append((candle, math.floor(self.balance/size), price))
+                self.history.append(ClosedOrder(candle, math.floor(self.balance/size), price, potential_commission))
         return self.balance, self.positions
     
 
@@ -150,13 +160,15 @@ class NoLewerage(Transaction):
                  if(len(self.positions) > 0):
                      posToClose = self.positions.pop()
                      if posToClose[0] > size:
+                         potential_commission = self.commission(size * price)
                          self.positions.append((posToClose[0]- size, posToClose[1], takeProfit, stopLoss))
-                         self.history.append((candle, -size, price))
-                         self.balance += size*price
+                         self.history.append(ClosedOrder(candle, -size, price, potential_commission))
+                         self.balance += size*price - potential_commission
                          size = -1
                      elif  posToClose[0] <= size:
-                         self.balance += posToClose[0]*price
-                         self.history.append((candle, -posToClose[0], price))
+                         potential_commission = self.commission(posToClose[0] * price)
+                         self.balance += posToClose[0]*price - potential_commission
+                         self.history.append(ClosedOrder(candle, -posToClose[0], price, potential_commission))
                          size-=posToClose[0]          
                  else:
                      break
@@ -177,8 +189,9 @@ class NoLewerage(Transaction):
         assetsVal = 0.0
         if(toClose):
             for pos in self.positions:
-                balance += pos[0] * lastPrice
-                self.history.append((candle, -pos[0], lastPrice))
+                potential_commission = self.commission(pos*lastPrice)
+                balance += pos[0] * lastPrice  - potential_commission
+                self.history.append(ClosedOrder(candle, -pos[0], lastPrice, potential_commission))
         else:
             for pos in self.positions:
                 assetsVal += pos[0] * lastPrice

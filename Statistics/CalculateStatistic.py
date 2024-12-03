@@ -42,7 +42,7 @@ class CalculateStatistic:
         args_dict = {'prices': prices, 'transactions': transactions, 'assets_value': assets_value, 'balance': balance, 'benchmark_price': benchmark_prices }
         for metric in self.metrics:
             try:
-                res = metric.calculate(prices)
+                res = metric.calculate(args_dict)
                 results_dict[metric.__name__] = res
 
             except error:
@@ -62,7 +62,8 @@ def is_avalible(selected, fullList):
 #Check if input module names exist
      sel = selected.split(',')
      for s in sel:
-         if s.strip() not in fullList:
+         s = s.strip()
+         if s not in fullList:
              corr_input = False
              while(corr_input == False):
                 inp = input('Metrics ' + s + ' was not found.\nWould you like to proceed? Y/N')
@@ -77,9 +78,9 @@ def import_stats( to_import):
      sel_modules = list()
      for n in to_import:
        try:
-         name = 'Statistics.Metrics.' + n
+         name = 'Statistics.Metrics.' + n.strip()
          module = importlib.import_module(name)
-         my_class = getattr(module, n)
+         my_class = getattr(module, n.strip())
          module = my_class()
          sel_modules.append(module)
        except TypeError:

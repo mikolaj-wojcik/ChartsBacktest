@@ -29,7 +29,8 @@ if __name__ == "__main__":
         statistics = CalculateStatistic()
         statistics.select_stats()
         for strat in list_strat:
-            drawdown = statistics.calculate_performance(strat[1][3])
+            drawdown = statistics.calculate_performance(strat[1][3], transactions=strat[1][2])
+            print(drawdown)
 
 
     #print(list)

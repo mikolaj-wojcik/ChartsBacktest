@@ -6,7 +6,8 @@ class drawdown:
     def __init__(self):
         pass
 
-    def calculate(self, prices_df):
+    def calculate(self, args_dict, ):
+        prices_df = args_dict['prices']
         value = prices_df['portfolio_value']
         curr_max =value[0]
         curr_min = value[0]

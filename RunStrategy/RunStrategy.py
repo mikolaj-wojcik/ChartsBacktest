@@ -66,7 +66,7 @@ class RunStrategy:
         print(self.transaction.history)
         tmp_prices = self.priceList.copy()
         tmp_prices['portfolio_value'] = self.balanceTrack
-        return self.balance, assets, self.transactionHistory, tmp_prices
+        return self.balance, assets, self.transaction.history, tmp_prices
     
 
 
