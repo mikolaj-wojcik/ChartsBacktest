@@ -13,7 +13,7 @@ class Transaction():
         self.floatingPL = 0.0
         self.startBalance = balance
         self.min_commission = 1.0
-        self.commission_factor =0.0
+        self.commission_factor =0.007
         pass
 
     def reset(self):
@@ -67,7 +67,7 @@ class Transaction():
                 else:
                     break 
 
-        return positions, balance, size, commission
+        return positions, balance, size
      
 
     def selectLowPrice(self,  orderPrice, lastPrice, price):

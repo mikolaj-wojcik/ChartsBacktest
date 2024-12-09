@@ -31,7 +31,7 @@ class CalculateStatistic:
         selected_elements = input('')
         imported_metrics = is_avalible(selected_elements, list_avalible_stats)
         if len(imported_metrics) == 0 :
-            imported_metrics = self.selectStats()
+            #imported_metrics = self.select_stats()
             pass
         self.metrics = import_stats(imported_metrics)
         return self.metrics

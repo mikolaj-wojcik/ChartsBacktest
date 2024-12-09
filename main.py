@@ -12,6 +12,7 @@ import RunStrategy.RunStrategy as Run
 from RunStrategy.StartegyGrid import StartegyGrid
 from SelectStrategy import SelectStrategy
 from Statistics.CalculateStatistic import CalculateStatistic
+import Charts.chartcreator as chart
 
 if __name__ == "__main__":
     # Get json object with the intraday data and another with  the call's metadata
@@ -31,6 +32,7 @@ if __name__ == "__main__":
         for strat in list_strat:
             drawdown = statistics.calculate_performance(strat[1][3], transactions=strat[1][2])
             print(drawdown)
+            chart.create_chart(prices, strat)
 
 
     #print(list)
