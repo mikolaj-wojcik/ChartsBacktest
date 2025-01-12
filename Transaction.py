@@ -189,7 +189,7 @@ class NoLewerage(Transaction):
         assetsVal = 0.0
         if(toClose):
             for pos in self.positions:
-                potential_commission = self.commission(pos*lastPrice)
+                potential_commission = self.commission(pos[0]*lastPrice)
                 balance += pos[0] * lastPrice  - potential_commission
                 self.history.append(ClosedOrder(candle, -pos[0], lastPrice, potential_commission))
         else:

@@ -3,7 +3,7 @@ from Transaction import Lewerage, NoLewerage
 
 class RunStrategy:
 
-    def __init__(self, prices, startegy = None, startBalance=10000, leverage =1, allowShortSell = False, toClose = False):
+    def __init__(self, prices, startegy = None, startBalance=10000, leverage =1, allowShortSell = False, toClose = True):
         self.startBalance = startBalance
         self.strategy = startegy
         self.shortSell = allowShortSell

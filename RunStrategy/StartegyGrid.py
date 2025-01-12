@@ -1,16 +1,19 @@
 from RunStrategy import RunStrategy
+
+
+
 #from Statistics.CalculateStatistic import CalculateStatistic
 
 
 class StartegyGrid():
 
-    def __init__(self, strategy, prices):
+    def __init__(self, strategy, prices, starting_balance = 10000):
         self.strategy = strategy
         self.paramGrid = {}
         self.paramDict = strategy.paramsDict
         self.prices = prices
         self.resultList = []
-        self.run = RunStrategy.RunStrategy(prices)
+        self.run = RunStrategy.RunStrategy(prices, startBalance = starting_balance)
         print(type(strategy.paramsDict))
 
     def setGrid(self):
@@ -45,7 +48,8 @@ class StartegyGrid():
             self.strategy.setParams(current_combination)
             self.run.setStrategy(self.strategy)
             temp = current_combination.copy()
-            self.resultList.append((temp, self.run.runStrategy())) #<- running strategy Combination + balance + assets + transactionhistory(class ClosedOrder) + df_prices_balanceHistory
+            results_tuple = self.run.runStrategy()
+            self.resultList.append(single_strategy(temp, results_tuple[0], results_tuple[1], results_tuple[2], results_tuple[3])) #<- running strategy Combination + balance + assets + transactionhistory(class ClosedOrder) + df_prices_balanceHistory
             return
 
         current_key = keys[0]
@@ -65,3 +69,18 @@ class StartegyGrid():
                 for value in range(start, stop + 1, step):
                     current_combination[current_key] = value
                     self.generate_combinations(params_dict, current_combination, keys[1:])
+
+
+class single_strategy:
+
+    def __init__(self, name,balance, assets, transaction_history, prices):
+        self.name = name
+        self.prices = prices
+        self.statistics = None
+        self.transaction_history = transaction_history
+        self.balance = balance
+        self.assets = assets
+
+
+    def setStatistics(self, statistics):
+        self.statistics = statistics

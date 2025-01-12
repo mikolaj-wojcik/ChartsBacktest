@@ -8,6 +8,7 @@ import pricesStruct
 #from alpha_vantage.cryptocurrencies import CryptoCurrencies
 #from alpha_vantage.foreignexchange import ForeignExchange
 #from alpha_vantage.timeseries
+####TODO zmien kolumny w dataframie
 def load_csv(CSVpath = r'/home/mjetur/Pobrane/WykresyGiełdowe/ccc_d.csv'):
     
     data = pd.read_csv(CSVpath)

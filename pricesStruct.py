@@ -28,6 +28,7 @@ class priceStruct:
         self.low = low
 
 
+
 def generatePriceListFromDf(dataframe: pd.DataFrame) ->list :
     pricesList = []
     dateFormatWithTime = r'%Y-%m-%d %H:%M:%S'

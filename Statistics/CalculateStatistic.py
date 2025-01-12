@@ -5,6 +5,7 @@ from inspect import isclass
 from os import listdir
 from os.path import isfile, join
 from xxlimited_35 import error
+from OrderProcess import Order
 
 
 import Statistics.Metrics.PerformanceMetrics
@@ -37,9 +38,19 @@ class CalculateStatistic:
         return self.metrics
     pass
 
-    def calculate_performance(self, prices, transactions=0, assets_value=0, balance=0, benchmark_prices = 0):
+    def calculate_performance(self, prices, transactions : list[Order], assets_value=0, balance=0,  starting_balance = 0):
         results_dict = {}
-        args_dict = {'prices': prices, 'transactions': transactions, 'assets_value': assets_value, 'balance': balance, 'benchmark_price': benchmark_prices }
+        args_dict = {'prices': prices, 'transactions': transactions, 'assets_value': assets_value, 'balance': balance, 'starting_balance' : starting_balance  }
+
+        results_dict["Balance"] = round(balance,2)
+        results_dict["Gross Profit"] = round((balance - starting_balance), 2)
+        results_dict["Total Commission"] = round(get_total_comission(transactions),2)
+        results_dict["Net Profit"] = round(balance - starting_balance - results_dict["Total Commission"], 2)
+        results_dict["Total trades"] = len(transactions)
+        results_dict["Total buying transactions"] = len(list(filter( lambda x : (x.size > 0), transactions)))
+   #     results_dict["Total volume"] = sum(sum(filter( lambda x : (x.size > 0), transactions))transactions.size)
+
+
         for metric in self.metrics:
             try:
                 res = metric.calculate(args_dict)
@@ -89,3 +100,12 @@ def import_stats( to_import):
            print('Module doesnt exist in package Metrics')
        pass
      return sel_modules
+
+def get_total_comission(transactions):
+
+        total_comission = 0
+        for transaction in transactions:
+            total_comission += transaction.commission
+
+        return total_comission
+
