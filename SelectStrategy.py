@@ -1,25 +1,25 @@
-#from Strategies.SMAcross import SMAcross
+from Strategies.SMAcross import SMAcross
 import importlib
 import os
 
 
-def    SelectStrategy(select):
+def SelectStrategy(strategy_name):
     module=0
-    if(select):
+    if(strategy_name):
             try:
-                name = input('Strategy module name: ')
-                classN = input('Strategy module name: ')
-                name = 'Strategies.' + name
-                module = importlib.import_module(name)
-                my_class = getattr(module, classN)
+               # name = input('Strategy module name: ')
+                strategy_name_w = 'Strategies.' + strategy_name
+                module = importlib.import_module(strategy_name_w)
+                my_class = getattr(module, strategy_name)
                 module = my_class()
             except TypeError:
                  print('Strategy is not correctly implemented')
             except  ModuleNotFoundError:
-                 print('Module doesnt exist in package Strategies')
-        
-        
+                 print('Module ' + strategy_name+ ' doesnt exist in package Strategies')
+            except AttributeError:
+                print('There is no strategy called ' + strategy_name + 'in module Strategies')
+
     else:
-      #  module = SMAcross()
-        pass
+       module = SMAcross()
+       pass
     return module

@@ -3,7 +3,7 @@ from enum import Enum
 
 
 class Order():
-    def __init__(self, size, side, oType,protectionOrder :dict,  price=0.0, candle = None, commission = 0  ) -> None:
+    def __init__(self, size, side, oType,protectionOrder :dict,  price=0.0, candle = None, commission = 0, profit = 0.0 ) -> None:
         self.price = price
         self.size = size
         self.candle  = candle
@@ -97,11 +97,12 @@ class Order():
         return returnPrice
 
 class ClosedOrder():
-    def __init__(self, candle, size, price, commission ):
+    def __init__(self, candle, size, price, commission, profit = 0.0):
         self.candle = candle
         self.size = size
         self.price = price
         self.commission = commission
+        self.profit = profit
 
 class Direction(Enum):
     BUY = 'buy'

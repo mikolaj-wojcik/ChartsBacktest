@@ -7,35 +7,42 @@ from RunStrategy import RunStrategy
 
 class StartegyGrid():
 
-    def __init__(self, strategy, prices, starting_balance = 10000):
+    def __init__(self, strategy, prices, starting_balance = 10000, min_commission = 1.00, commission_factor = 0.05, strategy_params = {}):
         self.strategy = strategy
         self.paramGrid = {}
         self.paramDict = strategy.paramsDict
+        self.params_from_json = strategy_params
         self.prices = prices
         self.resultList = []
-        self.run = RunStrategy.RunStrategy(prices, startBalance = starting_balance)
+        self.run = RunStrategy.RunStrategy(prices, startBalance = starting_balance, min_commission = min_commission, commission_factor = commission_factor)
         print(type(strategy.paramsDict))
 
     def setGrid(self):
         paramGrid = {}
-        print('Enter in format \'min\', \'max\', \'step\'')
-        for key, val in self.paramDict.items():
-            print('Set value for ', key,':  value type ', type(val))
-            a = input( )
-            if(type(val) == int):
-                paramGrid[key] = tuple(int(x) for x in a.split(","))
-            else:
-                paramGrid[key] = tuple(float(x) for x in a.split(","))
-
+        try:
+            for key, val in self.paramDict.items():
+                if key in self.params_from_json.keys():
+                    if (type(val) == int):
+                        paramGrid[key] = tuple(int(x) for x in self.params_from_json[key])
+                    else:
+                        paramGrid[key] = tuple(float(x) for x in self.params_from_json[key])
+                else:
+                    print('Enter in format \'min\', \'max\', \'step\'')
+                    print('Set value for ', key,':  value type ', type(val))
+                    a = input( )
+                    if(type(val) == int):
+                        paramGrid[key] = tuple(int(x) for x in a.split(","))
+                    else:
+                        paramGrid[key] = tuple(float(x) for x in a.split(","))
+        except ValueError:
+            print('Expected int/float values in strategy parameters.')
+            return -1
         self.paramGrid = paramGrid
-
+        return 0
 
     def runGrid(self):
         
         self.generate_combinations(self.paramGrid)
-
-
-
         return  self.resultList
         
     def generate_combinations(self, params_dict, current_combination=None, keys=None):

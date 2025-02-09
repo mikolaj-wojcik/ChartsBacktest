@@ -1,5 +1,4 @@
 import pandas as pd
-import Indicators.SMA as SMA
 import Transaction
 import Strategies.Strategy as strat
 from ta.trend import SMAIndicator 
@@ -44,13 +43,16 @@ class SMAcross (strat.Strategy):
         currentLong = pricesRow['SMAlong']
         price = pricesRow['close']
         recomendation =0
+        size = 1.0
         #print("SMA7=", currentShort, "SMA14=", currentLong)
         if(currentShort > currentLong):
             if (self.lastShort <= self.lastLong):
                 recomendation = 1
+                size =3.0
         if(currentShort < currentLong):
             if (self.lastShort >= self.lastLong):
                 recomendation = 2
+                size = 2.0
         self.lastShort = currentShort
         self.lastLong = currentLong
-        return recomendation, price, 100.0, 100.0
+        return recomendation, size

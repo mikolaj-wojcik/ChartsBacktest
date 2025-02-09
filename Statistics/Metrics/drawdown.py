@@ -20,6 +20,4 @@ class drawdown:
             elif v < curr_min:
                 curr_min = v
         return str(round(max_dd*100, 4)) + '%'
-        #prices_df['prev_peak']= prices_df['portfolio_value'].cummax()
-        #prices_df['draw_down'] = (prices_df['portfolio_value'] - prices_df['prev_peak'])/prices_df['portfolio_value']
-        #return max(prices_df['draw_down'])
+
