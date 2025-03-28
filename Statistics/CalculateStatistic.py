@@ -37,9 +37,9 @@ class CalculateStatistic:
         gross_profit, gross_loss =get_gross(transactions)
         results_dict["Gross Profit"] = round(gross_profit,2)
         results_dict["Gross Loss"] = abs(round(gross_loss,2))
-        results_dict["Profit Factor"] = round(gross_profit,2)/round(abs(gross_loss), 2)
-        results_dict["Total Commission"] = round(get_total_comission(transactions),2)
-        results_dict["Net Profit"] = round(results_dict["Gross Profit"] - results_dict["Gross Loss"]  - results_dict["Total Commission"], 2)
+        results_dict["Profit Factor"] = round(gross_profit/(abs(gross_loss) if gross_loss != 0  else 1),2)# if gross_loss != 0 else 1), 2)
+        results_dict["Transaction costs"] = round(get_total_comission(transactions),2)
+        results_dict["Net Profit"] = round(results_dict["Gross Profit"] - results_dict["Gross Loss"]  - results_dict["Transaction costs"], 2)
         results_dict["Total trades"] = len(transactions)
         results_dict["Total buying transactions"] = len(list(filter( lambda x : (x.size > 0), transactions)))
         for metric in self.metrics:
@@ -55,7 +55,7 @@ class CalculateStatistic:
 
 
 def load_list_of_stat():
-     path = os.getcwd() + '/Statistics/Metrics'
+     path = os.path.dirname(__file__) + '/Metrics'
      onlyfiles = [f.split('.')[0] for f in listdir(path) if isfile(join(path, f))]
 
      return onlyfiles
@@ -64,12 +64,12 @@ def is_avalible(selected, fullList):
 #Check if input module names exist
      sel = selected.split(' ')
      for s in sel:
-         s = s.strip()
-         if s not in fullList:
-
+        s = s.strip()
+        if s not in fullList:
+            if s != '':
                 print('Metrics ' + s + ' was not found.')
-                sel.remove(s)
-                corr_input = True
+            sel.remove(s)
+            corr_input = True
      return sel
 
 def import_stats( to_import):

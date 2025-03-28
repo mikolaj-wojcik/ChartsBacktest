@@ -1,6 +1,7 @@
-import Indicators
+
 import pandas as pd
 from abc import ABC, abstractmethod
+import ta
 
 class Strategy(ABC):
 

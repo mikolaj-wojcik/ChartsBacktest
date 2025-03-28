@@ -1,4 +1,3 @@
-from matplotlib.backends.backend_pdf import PdfPages
 import Charts.chartcreator as chart
 import shutil
 import os

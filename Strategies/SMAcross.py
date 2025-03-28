@@ -8,12 +8,11 @@ class SMAcross (strat.Strategy):
    
     paramsDict = {'shortSMA' : 0, 'longSMA':0}
 
-    def __init__(self, prices = None,indicatorsParams = {'shortSMA':7, 'longSMA':14}, min_position=1):
+    def __init__(self, prices = None,indicatorsParams = {'shortSMA':7, 'longSMA':14}):
         super().__init__(prices = prices)
         self.indicatorsParams = indicatorsParams
         self.lastShort = 0.0
         self.lastLong = 0.0
-        self.min_position = min_position
         if(prices!=None):
             self.calculateIndicators()
         pass
@@ -37,7 +36,7 @@ class SMAcross (strat.Strategy):
         self.calculateIndicators()
         pass
     
-    def onTick(self, iter, budget=None):
+    def onTick(self, iter):
         pricesRow = super().onTick(iter)
         currentShort = pricesRow['SMAshort']
         currentLong = pricesRow['SMAlong']

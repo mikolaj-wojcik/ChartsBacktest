@@ -1,7 +1,4 @@
-import pandas as pd
-import Transaction
 import Strategies.Strategy as strat
-from ta.trend import SMAIndicator
 import random
 
 
@@ -40,4 +37,4 @@ class Coinflip(strat.Strategy):
                 self.last_transaction = 0
                 recomendation =2
         self.last_transaction += 1
-        return recomendation, price, 100.0, 100.0
+        return recomendation, price

@@ -15,7 +15,6 @@ class StartegyGrid():
         self.prices = prices
         self.resultList = []
         self.run = RunStrategy.RunStrategy(prices, startBalance = starting_balance, min_commission = min_commission, commission_factor = commission_factor)
-        print(type(strategy.paramsDict))
 
     def setGrid(self):
         paramGrid = {}

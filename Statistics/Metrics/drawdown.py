@@ -1,7 +1,6 @@
-import pandas as pd
+
 
 class drawdown:
-    paramsDict = {'BalanceTrack': []}
     __name__ = 'drawdown'
     def __init__(self):
         pass
