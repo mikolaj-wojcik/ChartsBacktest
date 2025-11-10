@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Dict
 
 class StrategyToRunModel(BaseModel):
     strategy_name: str
@@ -13,3 +13,4 @@ class StrategyToRunModel(BaseModel):
 class StrategyModel(BaseModel):
     strategy_name: str
     strategy_code: Optional[str] = None
+    #strategy_code: Optional[str] = None

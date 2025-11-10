@@ -22,6 +22,8 @@ class StrategyLoader:
         'math',
         'datetime',
         'typing',
+        'Strategies.Strategy',
+        'Strategies'
     }
 
     FORBIDDEN_CALLS = {
@@ -50,11 +52,68 @@ class StrategyLoader:
                 strategy_class = getattr(module, strategy_name)
 
                 # Instantiate and return
-                return strategy_class()
+                return 0, strategy_class()
             except Exception as e:
-                print(f'Error loading strategy: {str(e)}')
-                return 0
 
+                return -1, f'Error loading strategy: {str(e)}'
+
+    def load_from_file(self, file_path: str, strategy_class_name: Optional[str] = None):
+        """
+        Load strategy from a Python file.
+
+        Args:
+            file_path: Path to the .py file
+            strategy_class_name: Name of the strategy class (auto-detect if None)
+
+        Returns:
+            Strategy instance or 0 if failed
+        """
+        try:
+            # Validate file exists
+            if not os.path.exists(file_path):
+                return -1, f'File {file_path} not found'
+
+            # Read file content
+            with open(file_path, 'r') as f:
+                code = f.read()
+
+            # Validate code security
+            is_valid, message = self._validate_code(code)
+            if not is_valid:
+
+                return -1, f'Security validation failed: {message}'
+
+            # Load the module
+            module_name = Path(file_path).stem
+            spec = importlib.util.spec_from_file_location(module_name, file_path)
+
+            if spec is None or spec.loader is None:
+
+                return -1, f'Could not load module from file'
+
+            module = importlib.util.module_from_spec(spec)
+            sys.modules[module_name] = module
+            ret = spec.loader.exec_module(module)
+
+            # Find strategy class
+            if strategy_class_name:
+                strategy_class = getattr(module, strategy_class_name, None)
+            else:
+                # Auto-detect: find first class that inherits from Strategy
+                strategy_class = self._find_strategy_class(module)
+
+            if strategy_class is None:
+
+                return -1, f'No valid strategy class found in file'
+
+            # Instantiate and return
+            return 0, strategy_class()
+
+        except Exception as e:
+            #print(f'Error loading strategy from file: {str(e)}')
+            import traceback
+            traceback.print_exc()
+            return -1, f'Error loading strategy: {str(e)}'
 
     def load_from_string(self, code: str, strategy_class_name: str):
         """
@@ -71,8 +130,8 @@ class StrategyLoader:
             # Validate code security
             is_valid, message = self._validate_code(code)
             if not is_valid:
-                print(f'Security validation failed: {message}')
-                return 0
+                #print(f'Security validation failed: {message}')
+                return -1, f'Security validation failed: {message}'
 
             # Create temporary file
             with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
@@ -81,8 +140,7 @@ class StrategyLoader:
 
             try:
                 # Load from temporary file
-                result = self.load_from_file(temp_path, strategy_class_name)
-                return result
+                return self.load_from_file(temp_path, strategy_class_name)
             finally:
                 # Clean up temp file
                 try:
@@ -91,8 +149,8 @@ class StrategyLoader:
                     pass
 
         except Exception as e:
-            print(f'Error loading strategy from string: {str(e)}')
-            return 0
+           # print(f'Error loading strategy from string: {str(e)}')
+            return -1, f'Error loading strategy: {str(e)}'
 
     def _validate_code(self, code):
         """
@@ -217,8 +275,7 @@ def SelectStrategy(strategy_identifier: Union[str, dict]):
         class_name = strategy_identifier.get('class_name', '')
 
         if not code or not class_name:
-            print('Dictionary must contain "code" and "class_name" keys')
-            return 0
+            return -1,'Dictionary must contain "code" and "class_name" keys'
 
         return strategy_loader.load_from_string(code, class_name)
 
@@ -226,15 +283,14 @@ def SelectStrategy(strategy_identifier: Union[str, dict]):
         return strategy_loader.load_predef_strategy(strategy_identifier)
 
     else:
-        print(f'Invalid strategy identifier type: {type(strategy_identifier)}')
-        return 0
+        return -1 , f'Invalid strategy identifier type: {type(strategy_identifier)}'
 
 def GetParamsDictOfStrategy(strategy):
     if strategy is not None:
         try:
             return strategy.paramsDict
         except AttributeError:
-            return "Strategy has no paramsDict"
+            return  "Strategy has no paramsDict"
 
     return "Strategy is not loaded"
 # ============================================================================

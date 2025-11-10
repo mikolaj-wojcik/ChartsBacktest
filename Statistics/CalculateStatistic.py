@@ -1,26 +1,23 @@
 import importlib
-import sys
 import os
 from os import listdir
 from os.path import isfile, join
 from xxlimited_35 import error
 
-
 from OrderProcess import Order
-
-
+import Statistics.BasicMetrics as basicMetrics
 ###Avalible data:
 ###Price history
 ###Transaction history
 ###Assets value history
 ###Balance history
-PREDEF_METRICS = {"Gross Profit" : get_gross_profit,
-                  "Gross Loss": get_gross_loss,
-                  "Profit Factor": get_profit_factor,
-                  "Transaction costs": get_total_comission,
-                  "Net Profit": get_net_profit,
-                  "Total trades": get_total_trades,
-                  "Total buying transactions" : get_total_buying}
+PREDEF_METRICS = {"Gross Profit" : basicMetrics.get_gross_profit,
+                  "Gross Loss": basicMetrics.get_gross_loss,
+                  "Profit Factor": basicMetrics.get_profit_factor,
+                  "Transaction costs": basicMetrics.get_total_comission,
+                  "Net Profit": basicMetrics.get_net_profit,
+                  "Total trades": basicMetrics.get_total_trades,
+                  "Total buying transactions" : basicMetrics.get_total_buying}
 
 class CalculateStatistic:
 
@@ -61,7 +58,7 @@ class CalculateStatistic:
         return results_dict
 
     def calculate_predef_metric(self, metric: str, transactions):
-        gross_profit, gross_loss = get_gross(transactions)
+        #gross_profit, gross_loss = get_gross(transactions)
         """
         results_dict["Gross Profit"] = round(gross_profit, 2)
         results_dict["Gross Loss"] = abs(round(gross_loss, 2))
@@ -112,59 +109,6 @@ def import_stats( to_import):
              sel_modules.append(n)
      return sel_modules
 
-def get_total_comission(transactions):
-
-        total_comission = 0
-        for transaction in transactions:
-            total_comission += transaction.commission
-
-        return total_comission
 
 
-def get_gross(transactions):
-    total_profit = 0
-    total_loss = 0
 
-    for transaction in transactions:
-         if transaction.profit > 0:
-            total_profit += transaction.profit
-         elif transaction.profit < 0:
-             total_loss += transaction.profit
-
-    return total_profit, total_loss
-
-def get_gross_profit(transactions):
-    total_profit = 0
-    for transaction in transactions:
-        if transaction.profit > 0:
-            total_profit += transaction.profit
-    return round(total_profit,2)
-
-def get_gross_loss(transactions):
-    total_loss = 0
-    for transaction in transactions:
-        if transaction.profit < 0:
-            total_loss += transaction.profit
-    return round(total_loss,2)
-
-def get_profit_factor(transactions):
-
-    gross_profit, gross_loss = get_gross(transactions)
-    return round(gross_profit / (abs(gross_loss) if gross_loss != 0 else 1), 2)
-
-def get_net_profit(transactions):
-    gross_profit, gross_loss = get_gross(transactions)
-
-    return round(gross_profit - gross_loss, 2)
-    pass
-
-
-def get_total_trades(transactions):
-    return len(transactions)
-    pass
-
-
-def get_total_buying(transactions):
-    return len(list(filter(lambda x: (x.size > 0), transactions)))
-
-    pass
