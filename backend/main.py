@@ -23,6 +23,7 @@ import traceback
 from datetime import datetime
 import io
 import uvicorn
+import ValidateStrategy
 
 from Strategies.SMAcross import SMAcross
 
@@ -111,10 +112,16 @@ def validate_strategy(strategy : StrategyModel):
     decoded_code = decoded_bytes.decode('utf-8')
     lo = StrategyLoader()
     li_code, li_message = lo.load_from_string(decoded_code, strategy.strategy_name)
+    #if li_code = 0 then li_message is a strategy object
     if li_code != 0:
        return li_message
     else:
-       return 'Valid'
+        val = ValidateStrategy.ValidateStrategy()
+        err_list = val.validate(li_message)
+        if len(err_list) > 0:
+            return err_list
+        else:
+            return 'Valid'
 #    #return GetParamsDictOfStrategy(ls_name)
 
 
@@ -123,7 +130,10 @@ if __name__ == "__main__":
     #startegy
     #if
     #GetParamsDictOfStrategy(SelectStrategy(name))
-
+    strat = StrategyModel
+    strat.strategy_name = 'TestStrategy'
+    strat.strategy_code = 'aW1wb3J0IHBhbmRhcyBhcyBwZAppbXBvcnQgU3RyYXRlZ2llcy5TdHJhdGVneSBhcyBzdHJhdApmcm9tIHRhLnRyZW5kIGltcG9ydCBTTUFJbmRpY2F0b3IKCmNsYXNzIFRlc3RTdHJhdGVneShzdHJhdC5TdHJhdGVneSk6CiAgICBwYXJhbXNEaWN0ID0geydwZXJpb2QnOiAwfQoKICAgIGRlZiBfX2luaXRfXyhzZWxmLCBwcmljZXM9Tm9uZSwgaW5kaWNhdG9yc1BhcmFtcz17J3BlcmlvZCc6IDEwfSk6CiAgICAgICAgc3VwZXIoKS5fX2luaXRfXyhwcmljZXM9cHJpY2VzKQogICAgICAgIHNlbGYuaW5kaWNhdG9yc1BhcmFtcyA9IGluZGljYXRvcnNQYXJhbXMKICAgICAgICBpZiBwcmljZXMgaXMgbm90IE5vbmU6CiAgICAgICAgICAgIHNlbGYuY2FsY3VsYXRlSW5kaWNhdG9ycygpCgogICAgZGVmIHNldFBhcmFtcyhzZWxmLCBwYXJhbXMpOgogICAgICAgIHNlbGYuaW5kaWNhdG9yc1BhcmFtcyA9IHBhcmFtcwogICAgICAgIGlmIG5vdCBzZWxmLnByaWNlcy5lbXB0eToKICAgICAgICAgICAgc2VsZi5jYWxjdWxhdGVJbmRpY2F0b3JzKCkKCiAgICBkZWYgY2FsY3VsYXRlSW5kaWNhdG9ycyhzZWxmKToKICAgICAgICBzbWEgPSBTTUFJbmRpY2F0b3Ioc2VsZi5wcmljZXNbJ2Nsb3NlJ10sIHNlbGYuaW5kaWNhdG9yc1BhcmFtc1sncGVyaW9kJ10pCiAgICAgICAgc2VsZi5wcmljZXNbJ1NNQSddID0gc21hLnNtYV9pbmRpY2F0b3IoKQoKICAgIGRlZiBsb2FkUHJpY2VzKHNlbGYsIHByaWNlcyk6CiAgICAgICAgc3VwZXIoKS5zZXRQcmljZXMocHJpY2VzKQogICAgICAgIHNlbGYuY2FsY3VsYXRlSW5kaWNhdG9ycygpCgogICAgZGVmIG9uVGljayhzZWxmLCBpdGVyKToKICAgICAgICByZXR1cm4gc3VwZXIoKS5vblRpY2soaXRlcik='
+    validate_strategy(strat)
     SelectStrategy({'class_name': 'TestStrategy', 'code' : TEST_STRAT})
     uvicorn.run(app, host="0.0.0.0", port=8000)
     pass
