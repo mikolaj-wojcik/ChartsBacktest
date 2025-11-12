@@ -1,3 +1,4 @@
 /backend/build/
 /backend/chartsTemp/
 /backend/dist/
+/backend/__pycache__/
