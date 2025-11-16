@@ -109,3 +109,19 @@ class ValidateStrategy:
 
             except Exception as e:
                 self.warnings.append(f"Could not test onTick: {str(e)}")
+
+def validate_parmsDict(definition, actual):
+
+    for key in actual.keys():
+        if key not in definition.keys():
+            return False
+        if len(actual[key]) != 3:
+            return False
+        for single_value in actual[key]:
+            if type(single_value) != type(definition[key]):
+                return False
+        if actual[key][0] > actual[key][1]:
+            return False
+        if actual[key][2] <= 0:
+            return False
+    return True

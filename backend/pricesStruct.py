@@ -3,6 +3,9 @@ from datetime import datetime
 import pandas as pd
 import re
 
+#TODO delete this useless file
+
+
 @dataclass
 class priceStruct:
     open: float
@@ -29,8 +32,8 @@ class priceStruct:
 
 
 
-def generatePriceListFromDf(dataframe: pd.DataFrame) ->list :
-    pricesList = []
+def generate_price_list_from_df(dataframe: pd.DataFrame) ->list :
+    prices_list = []
     dateFormatWithTime = r'%Y-%m-%d %H:%M:%S'
     dateFormatNoTime = '%Y-%m-%d'
     for ind in dataframe.index:
@@ -40,6 +43,6 @@ def generatePriceListFromDf(dataframe: pd.DataFrame) ->list :
         else:
             date = datetime.strptime(dateString, dateFormatNoTime)
         singPrice= priceStruct(open = dataframe['open'][ind], high= dataframe['high'][ind], low= dataframe['low'][ind], close= dataframe['close'][ind], date= date)
-        pricesList.append(singPrice)
+        prices_list.append(singPrice)
 
-    return pricesList
+    return prices_list
