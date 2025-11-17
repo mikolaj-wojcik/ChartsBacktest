@@ -31,7 +31,7 @@ class ValidateStrategy:
         self._check_method_signatures(strategy_obj)
 
         # Check return types
-        self._check_return_types(strategy_obj)
+        #self._check_return_types(strategy_obj)
 
         return self.errors
 

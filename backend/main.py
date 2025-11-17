@@ -2,7 +2,7 @@ import pandas as pd
 
 import loadData
 import sys
-
+from dictionaries.priceType import sample_prices
 from RequestModels import StrategyModel, StrategyToRunModel
 from RunStrategy.StartegyGrid import StartegyGrid, single_strategy
 from SelectStrategy import SelectStrategy, StrategyLoader, GetParamsDictOfStrategy
@@ -151,12 +151,34 @@ def validate_strategy(strategy: StrategyModel):
 
 
 @app.post("/run_strategy")
-def run_strategy(strategy : StrategyToRunModel):
-    pricesdf = pd.dataframe([p.dict() for p in strategy.prices])
-    decoded_bytes = base64.b64decode(strategy.strategy_code)
-    decoded_code = decoded_bytes.decode('utf-8')
-    lo = StrategyLoader()
-    li_code, li_message = lo.load_from_string(decoded_code, strategy.strategy_name)
+def run_strategy(passed_strategy : StrategyToRunModel):
+    pricesdf = pd.DataFrame(passed_strategy.prices)
+    startegy_to_init = passed_strategy.strategy_name
+    if passed_strategy.strategy_code != '':
+        try:
+            # Decode with error handling
+            try:
+                encoded = passed_strategy.strategy_code.strip()
+
+                # Fix padding
+                missing_padding = len(encoded) % 4
+                if missing_padding:
+                    encoded += '=' * (4 - missing_padding)
+
+                decoded_bytes = base64.b64decode(encoded)
+                decoded_code = decoded_bytes.decode('utf-8')
+
+            except Exception as e:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Base64 decode error: {str(e)}"
+                )
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        startegy_to_init = {"code": decoded_code, "class_name": passed_strategy.strategy_name }
+    li_code, li_message = SelectStrategy(startegy_to_init)
     if li_code != 0:
        return li_message
     else:
@@ -165,13 +187,13 @@ def run_strategy(strategy : StrategyToRunModel):
         if len(err_list) > 0:
             return err_list
     strategy_obj = li_message
-    if not ValidateStrategy.validate_parmsDict(strategy_obj.paramsDict, strategy.params):
+    if not ValidateStrategy.validate_parmsDict(strategy_obj.paramsDict, passed_strategy.params):
         return {"valid": False, "errors": "Params not correctly defined"}
 
 
-    strategy_grid = StartegyGrid(strategy_obj, pricesdf, strategy.starting_balance, strategy.min_commission, strategy.commission_factor, strategy.params)
+    strategy_grid = StartegyGrid(strategy_obj, pricesdf, passed_strategy.starting_balance, passed_strategy.min_commission, passed_strategy.commission_factor, passed_strategy.params)
     strategy_grid.setGrid()
-    strategy_grid.runGrid()
+    result_list = strategy_grid.runGrid()
 
 
 
@@ -183,12 +205,17 @@ if __name__ == "__main__":
 
     #if
     #GetParamsDictOfStrategy(SelectStrategy(name))
-    #strat = StrategyModel
-    #strat.strategy_name = 'TestStrategy'
-    #strat.strategy_code = 'aW1wb3J0IHBhbmRhcyBhcyBwZAppbXBvcnQgU3RyYXRlZ2llcy5TdHJhdGVneSBhcyBzdHJhdApmcm9tIHRhLnRyZW5kIGltcG9ydCBTTUFJbmRpY2F0b3IKCmNsYXNzIFRlc3RTdHJhdGVneShzdHJhdC5TdHJhdGVneSk6CiAgICBwYXJhbXNEaWN0ID0geydwZXJpb2QnOiAwfQoKICAgIGRlZiBfX2luaXRfXyhzZWxmLCBwcmljZXM9Tm9uZSwgaW5kaWNhdG9yc1BhcmFtcz17J3BlcmlvZCc6IDEwfSk6CiAgICAgICAgc3VwZXIoKS5fX2luaXRfXyhwcmljZXM9cHJpY2VzKQogICAgICAgIHNlbGYuaW5kaWNhdG9yc1BhcmFtcyA9IGluZGljYXRvcnNQYXJhbXMKICAgICAgICBpZiBwcmljZXMgaXMgbm90IE5vbmU6CiAgICAgICAgICAgIHNlbGYuY2FsY3VsYXRlSW5kaWNhdG9ycygpCgogICAgZGVmIHNldFBhcmFtcyhzZWxmLCBwYXJhbXMpOgogICAgICAgIHNlbGYuaW5kaWNhdG9yc1BhcmFtcyA9IHBhcmFtcwogICAgICAgIGlmIG5vdCBzZWxmLnByaWNlcy5lbXB0eToKICAgICAgICAgICAgc2VsZi5jYWxjdWxhdGVJbmRpY2F0b3JzKCkKCiAgICBkZWYgY2FsY3VsYXRlSW5kaWNhdG9ycyhzZWxmKToKICAgICAgICBzbWEgPSBTTUFJbmRpY2F0b3Ioc2VsZi5wcmljZXNbJ2Nsb3NlJ10sIHNlbGYuaW5kaWNhdG9yc1BhcmFtc1sncGVyaW9kJ10pCiAgICAgICAgc2VsZi5wcmljZXNbJ1NNQSddID0gc21hLnNtYV9pbmRpY2F0b3IoKQoKICAgIGRlZiBsb2FkUHJpY2VzKHNlbGYsIHByaWNlcyk6CiAgICAgICAgc3VwZXIoKS5zZXRQcmljZXMocHJpY2VzKQogICAgICAgIHNlbGYuY2FsY3VsYXRlSW5kaWNhdG9ycygpCgogICAgZGVmIG9uVGljayhzZWxmLCBpdGVyKToKICAgICAgICByZXR1cm4gc3VwZXIoKS5vblRpY2soaXRlcik='
-    #validate_strategy(strat)
+    strat = StrategyToRunModel
+    strat.prices = sample_prices
+    strat.strategy_name = 'SMAcross'
+    strat.strategy_code = ''#'aW1wb3J0IHBhbmRhcyBhcyBwZAppbXBvcnQgU3RyYXRlZ2llcy5TdHJhdGVneSBhcyBzdHJhdApmcm9tIHRhLnRyZW5kIGltcG9ydCBTTUFJbmRpY2F0b3IKCmNsYXNzIFRlc3RTdHJhdGVneShzdHJhdC5TdHJhdGVneSk6CiAgICBwYXJhbXNEaWN0ID0geydwZXJpb2QnOiAwfQoKICAgIGRlZiBfX2luaXRfXyhzZWxmLCBwcmljZXM9Tm9uZSwgaW5kaWNhdG9yc1BhcmFtcz17J3BlcmlvZCc6IDEwfSk6CiAgICAgICAgc3VwZXIoKS5fX2luaXRfXyhwcmljZXM9cHJpY2VzKQogICAgICAgIHNlbGYuaW5kaWNhdG9yc1BhcmFtcyA9IGluZGljYXRvcnNQYXJhbXMKICAgICAgICBpZiBwcmljZXMgaXMgbm90IE5vbmU6CiAgICAgICAgICAgIHNlbGYuY2FsY3VsYXRlSW5kaWNhdG9ycygpCgogICAgZGVmIHNldFBhcmFtcyhzZWxmLCBwYXJhbXMpOgogICAgICAgIHNlbGYuaW5kaWNhdG9yc1BhcmFtcyA9IHBhcmFtcwogICAgICAgIGlmIG5vdCBzZWxmLnByaWNlcy5lbXB0eToKICAgICAgICAgICAgc2VsZi5jYWxjdWxhdGVJbmRpY2F0b3JzKCkKCiAgICBkZWYgY2FsY3VsYXRlSW5kaWNhdG9ycyhzZWxmKToKICAgICAgICBzbWEgPSBTTUFJbmRpY2F0b3Ioc2VsZi5wcmljZXNbJ2Nsb3NlJ10sIHNlbGYuaW5kaWNhdG9yc1BhcmFtc1sncGVyaW9kJ10pCiAgICAgICAgc2VsZi5wcmljZXNbJ1NNQSddID0gc21hLnNtYV9pbmRpY2F0b3IoKQoKICAgIGRlZiBsb2FkUHJpY2VzKHNlbGYsIHByaWNlcyk6CiAgICAgICAgc3VwZXIoKS5zZXRQcmljZXMocHJpY2VzKQogICAgICAgIHNlbGYuY2FsY3VsYXRlSW5kaWNhdG9ycygpCgogICAgZGVmIG9uVGljayhzZWxmLCBpdGVyKToKICAgICAgICByZXR1cm4gc3VwZXIoKS5vblRpY2soaXRlcik='
+    strat.min_commission = 0.5
+    strat.commission_factor = 0.01
+    strat.params = {'shortSMA': (10,20,1), 'longSMA': (20,30,1)  }
+    strat.starting_balance = 5000
+    print(run_strategy(strat))
     #SelectStrategy({'class_name': 'TestStrategy', 'code' : TEST_STRAT})
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    #uvicorn.run(app, host="0.0.0.0", port=8000)
     pass
 
     """

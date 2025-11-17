@@ -1,6 +1,6 @@
 import pandas as pd
-import Transaction
-import Strategies.Strategy as strat
+import backend.Transaction
+import backend.Strategies.Strategy as strat
 from ta.trend import SMAIndicator 
 
 
@@ -26,6 +26,7 @@ class SMAcross (strat.Strategy):
             self.calculateIndicators()
 
     def calculateIndicators(self):
+        print(self.prices['close'])
         SMA_short = SMAIndicator(self.prices['close'], self.indicatorsParams['shortSMA'])
         SMA_long = SMAIndicator(self.prices['close'], self.indicatorsParams['longSMA'])
         self.prices['SMAshort'] = SMA_short.sma_indicator()

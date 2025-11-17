@@ -1,4 +1,5 @@
 from RunStrategy import RunStrategy
+import numpy as np
 
 
 
@@ -12,6 +13,7 @@ class StartegyGrid():
         self.paramGrid = {}
         self.paramDict = strategy.paramsDict
         self.params_from_json = strategy_params
+        #prices = prices.applymap(lambda x: float(x) if isinstance(x, (np.float64,)) else x)
         self.prices = prices
         self.resultList = []
         self.run = RunStrategy.RunStrategy(prices, startBalance = starting_balance, min_commission = min_commission, commission_factor = commission_factor)

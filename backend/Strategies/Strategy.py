@@ -18,8 +18,8 @@ class Strategy(ABC):
 
     @abstractmethod
     def onTick(self, iter):
-        return 0, 0.0
-        #return self.prices.iloc[iter]
+        #return 0, 0.0
+        return self.prices.iloc[iter]
 
     def updateIndicators(self, price):
         for indk, indv in self.indicators.items():
