@@ -97,12 +97,13 @@ class Order():
         return returnPrice
 
 class ClosedOrder():
-    def __init__(self, candle, size, price, commission, profit = 0.0):
+    def __init__(self, candle, size, price, commission, profit = 0.0, balance = 0.0):
         self.candle = candle
         self.size = size
         self.price = price
         self.commission = commission
         self.profit = profit
+        self.balance = balance
 
 class Direction(Enum):
     BUY = 'buy'

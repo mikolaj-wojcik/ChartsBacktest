@@ -1,6 +1,6 @@
 import math
 
-from backend.OrderProcess.Order import ClosedOrder
+from OrderProcess.Order import ClosedOrder
 
 
 class Transaction():
@@ -149,13 +149,13 @@ class NoLewerage(Transaction):
         if(size*price < self.balance):
                 self.positions.append((size,price))
                 self.balance -= (price*size + potential_commission)
-                self.history.append(ClosedOrder(candle, size, price, potential_commission , 0))
+                self.history.append(ClosedOrder(candle, size, price, potential_commission , 0, self.balance))
         else:
                 size = math.floor(self.balance/price)
                 potential_commission = self.commission(size * price)
                 self.balance-= size * price + potential_commission
                 self.positions.append((size, price))
-                self.history.append(ClosedOrder(candle, size, price, potential_commission, 0.0))
+                self.history.append(ClosedOrder(candle, size, price, potential_commission, 0.0, self.balance))
         return self.balance, self.positions
     
 
@@ -166,13 +166,14 @@ class NoLewerage(Transaction):
                      if posToClose[0] > size:
                          potential_commission = self.commission(size * price)
                          self.positions.append((posToClose[0]- size, posToClose[1]))
-                         self.history.append(ClosedOrder(candle, -size, price, potential_commission, (price - posToClose[1]) * size))
-                         self.balance += size*price - potential_commission
+                         self.balance += size * price - potential_commission
+                         self.history.append(ClosedOrder(candle, -size, price, potential_commission, (price - posToClose[1]) * size,  self.balance))
+
                          size = -1
                      elif  posToClose[0] <= size:
                          potential_commission = self.commission(posToClose[0] * price)
                          self.balance += posToClose[0]*price - potential_commission
-                         self.history.append(ClosedOrder(candle, -posToClose[0], price, potential_commission,(price - posToClose[1]) * posToClose[0]))
+                         self.history.append(ClosedOrder(candle, -posToClose[0], price, potential_commission,(price - posToClose[1]) * posToClose[0],self.balance))
                          size-=posToClose[0]          
                  else:
                      break
@@ -195,7 +196,7 @@ class NoLewerage(Transaction):
             for pos in self.positions:
                 potential_commission = self.commission(pos[0]*lastPrice)
                 balance += pos[0] * lastPrice  - potential_commission
-                self.history.append(ClosedOrder(candle, -pos[0], lastPrice, potential_commission, (lastPrice - pos[1]) * pos[0]))
+                self.history.append(ClosedOrder(candle, -pos[0], lastPrice, potential_commission, (lastPrice - pos[1]) * pos[0], balance))
         else:
             for pos in self.positions:
                 assetsVal += pos[0] * lastPrice

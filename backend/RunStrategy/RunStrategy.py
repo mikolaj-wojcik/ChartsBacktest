@@ -1,4 +1,4 @@
-from backend.Transaction import Lewerage, NoLewerage
+from Transaction import Lewerage, NoLewerage
 
 
 class RunStrategy:

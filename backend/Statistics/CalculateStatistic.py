@@ -19,6 +19,7 @@ PREDEF_METRICS = {"Gross Profit" : basicMetrics.get_gross_profit,
                   "Total trades": basicMetrics.get_total_trades,
                   "Total buying transactions" : basicMetrics.get_total_buying}
 
+#TODO add metrics validation
 class CalculateStatistic:
 
 
@@ -27,14 +28,7 @@ class CalculateStatistic:
         pass
 
     def select_stats (self, statistics):
-        list_avalible_stats = load_list_of_stat()
-        #print('Select stats to measure performance of strategy.\nUse commas to separate elements.\nAvailable stats are:')
-
-        imported_metrics = is_avalible(''.join(statistics), list_avalible_stats)
-        if len(imported_metrics) == 0 :
-            #imported_metrics = self.select_stats()
-            pass
-        self.metrics = import_stats(imported_metrics)
+        self.metrics = import_stats(statistics)
         return self.metrics
     pass
 
@@ -73,7 +67,7 @@ class CalculateStatistic:
 
 def load_list_of_stat():
     path = os.path.dirname(__file__) + '/Metrics'
-    onlyfiles = PREDEF_METRICS.keys()
+    onlyfiles = list(PREDEF_METRICS.keys())
     onlyfiles += [f.split('.')[0] for f in listdir(path) if isfile(join(path, f))]
 
     return onlyfiles

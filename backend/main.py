@@ -102,7 +102,7 @@ def get_params(str_name : str):
         return GetParamsDictOfStrategy(strategy)
 
 @app.get("/metrics")
-def get_params():
+def get_metrics():
  #   SelectStrategy(name.strategy_name)
     return load_list_of_stat()
 
@@ -154,6 +154,8 @@ def validate_strategy(strategy: StrategyModel):
 def run_strategy(passed_strategy : StrategyToRunModel):
     pricesdf = pd.DataFrame(passed_strategy.prices)
     startegy_to_init = passed_strategy.strategy_name
+    statistics = CalculateStatistic()
+    statistics.select_stats(passed_strategy.metrics)
     if passed_strategy.strategy_code != '':
         try:
             # Decode with error handling
@@ -195,6 +197,10 @@ def run_strategy(passed_strategy : StrategyToRunModel):
     strategy_grid.setGrid()
     result_list = strategy_grid.runGrid()
 
+    for strategy_result in result_list:
+        strategy_result.setStatistics(statistics.calculate_performance(strategy_result.prices, transactions=strategy_result.transaction_history, balance=strategy_result.balance, starting_balance=passed_strategy.starting_balance))
+
+    return result_list
 
 
 
@@ -205,6 +211,8 @@ if __name__ == "__main__":
 
     #if
     #GetParamsDictOfStrategy(SelectStrategy(name))
+
+
     strat = StrategyToRunModel
     strat.prices = sample_prices
     strat.strategy_name = 'SMAcross'
@@ -212,10 +220,12 @@ if __name__ == "__main__":
     strat.min_commission = 0.5
     strat.commission_factor = 0.01
     strat.params = {'shortSMA': (10,20,1), 'longSMA': (20,30,1)  }
+    strat.metrics = ['Transaction costs', 'Net Profit', 'drawown']
     strat.starting_balance = 5000
-    print(run_strategy(strat))
+    run_strategy(strat)
+
     #SelectStrategy({'class_name': 'TestStrategy', 'code' : TEST_STRAT})
-    #uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
     pass
 
     """

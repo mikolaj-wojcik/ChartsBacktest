@@ -31,8 +31,8 @@ def get_profit_factor(transactions):
 
 def get_net_profit(transactions):
     gross_profit, gross_loss = get_gross(transactions)
-
-    return round(gross_profit - gross_loss, 2)
+    comission = get_total_comission(transactions)
+    return round(gross_profit + gross_loss - comission, 2)
     pass
 
 

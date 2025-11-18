@@ -1,6 +1,6 @@
 import pandas as pd
-import backend.Transaction
-import backend.Strategies.Strategy as strat
+
+import Strategies.Strategy as strat
 from ta.trend import SMAIndicator 
 
 
@@ -26,11 +26,10 @@ class SMAcross (strat.Strategy):
             self.calculateIndicators()
 
     def calculateIndicators(self):
-        print(self.prices['close'])
-        SMA_short = SMAIndicator(self.prices['close'], self.indicatorsParams['shortSMA'])
-        SMA_long = SMAIndicator(self.prices['close'], self.indicatorsParams['longSMA'])
-        self.prices['SMAshort'] = SMA_short.sma_indicator()
-        self.prices['SMAlong'] = SMA_long.sma_indicator()
+        sma_short = SMAIndicator(self.prices['close'], self.indicatorsParams['shortSMA'])
+        sma_long = SMAIndicator(self.prices['close'], self.indicatorsParams['longSMA'])
+        self.prices['SMAshort'] = sma_short.sma_indicator()
+        self.prices['SMAlong'] = sma_long.sma_indicator()
 
     def loadPrices(self, prices):
         super().setPrices(prices)
@@ -48,11 +47,11 @@ class SMAcross (strat.Strategy):
         if(currentShort > currentLong):
             if (self.lastShort <= self.lastLong):
                 recomendation = 1
-                size =3.0
+                size =1.0
         if(currentShort < currentLong):
             if (self.lastShort >= self.lastLong):
                 recomendation = 2
-                size = 2.0
+                size = 1.0
         self.lastShort = currentShort
         self.lastLong = currentLong
         return recomendation, size

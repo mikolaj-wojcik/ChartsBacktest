@@ -18,6 +18,7 @@ class StrategyToRunModel(BaseModel):
     min_commission: float
     commission_factor: float
     starting_balance: float
+    metrics: list [str]
 
 
 class StrategyModel(BaseModel):
