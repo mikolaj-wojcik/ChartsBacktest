@@ -1,51 +1,26 @@
+version: '3.8'
+
 services:
-  # Backend API service
   backend:
-    env_file:
-      - .env
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: backend
+    build: ./backend
     ports:
       - "8000:8000"
-    environment:
-      - PYTHONUNBUFFERED=1
-      - LOG_LEVEL=info
     volumes:
-      # Mount code for development (remove in production)
-      - ./backend:/app:ro
+      - ./backend:/app
     networks:
-      - trading-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-    # Security options
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    cap_add:
-      - NET_BIND_SERVICE
-    # Resource limits
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 1G
-        reservations:
-          cpus: '0.5'
-          memory: 512M
+      - app-network
+
+  frontend:
+    build: ./Front
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./Front:/app
+    networks:
+      - app-network
+    stdin_open: true
+    tty: true
 
 networks:
-  trading-network:
+  app-network:
     driver: bridge
-
-# Optional: Add volume for persistent data
-volumes:
-  backend-data:
-    driver: local
