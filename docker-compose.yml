@@ -11,15 +11,26 @@ services:
       - app-network
 
   frontend:
-    build: ./Front
+    build:
+      context: ./Front
     ports:
       - "8080:8080"
     volumes:
       - ./Front:/app
+      # Exclude build artifacts and cache from volume mount
+      - /app/.dart_tool
+      - /app/build
+      - /app/linux
+      - /app/macos
+      - /app/windows
+      - /app/ios
+      - /app/android
     networks:
       - app-network
     stdin_open: true
     tty: true
+    environment:
+      - PUB_CACHE=/app/.pub-cache
 
 networks:
   app-network:

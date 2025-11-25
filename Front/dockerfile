@@ -1,9 +1,6 @@
 FROM ubuntu:22.04
 
-# Avoid prompts during installation
 ENV DEBIAN_FRONTEND=noninteractive
-
-# Install dependencies
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
@@ -13,25 +10,26 @@ RUN apt-get update && apt-get install -y \
     xz-utils \
     zip \
     libglu1-mesa \
-    python3 \
     && rm -rf /var/lib/apt/lists/*
-
 
 # Install Flutter
 RUN git clone https://github.com/flutter/flutter.git /flutter
 ENV PATH="/flutter/bin:${PATH}"
 
-# Pre-download Flutter SDK
-RUN flutter doctor
-
-# Enable web support
-RUN flutter channel stable && \
+# Configure Flutter
+RUN flutter config --no-analytics && \
+    flutter config --enable-web && \
+    flutter channel stable && \
     flutter upgrade && \
-    flutter config --enable-web
+    flutter doctor
 
 WORKDIR /app
 
+# Pre-download dependencies (will be cached)
+COPY pubspec.* ./
+RUN flutter pub get || true
 
 EXPOSE 8080
 
-CMD ["python3", "-m", "http.server", "8080", "--directory", "/app/build/web"]
+# Run in development mode with hot reload
+CMD ["flutter", "run", "-d", "web-server", "--web-hostname", "0.0.0.0", "--web-port", "8080", "--web-allow-expose-url", "--hot","--compilation-time-cap=300"]

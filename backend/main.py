@@ -84,9 +84,6 @@ def health_check():
 def health_check1():
     return {"status": "zdrowy"}
 
-@app.get("/calculate")
-def calculate():
-    return {"stat":"Baby"}
 
 @app.get("/avalible_default_starts")
 def avalible_default_starts():
@@ -106,7 +103,6 @@ def get_metrics():
  #   SelectStrategy(name.strategy_name)
     return load_list_of_stat()
 
-@app.post("/validate_strategy")
 @app.post("/validate_strategy")
 def validate_strategy(strategy: StrategyModel):
     try:
@@ -209,6 +205,13 @@ def run_strategy(passed_strategy : StrategyToRunModel):
 
 if __name__ == "__main__":
 
+
+    #SelectStrategy({'class_name': 'TestStrategy', 'code' : TEST_STRAT})
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+    pass
+
+    """
+    
     #if
     #GetParamsDictOfStrategy(SelectStrategy(name))
 
@@ -223,12 +226,6 @@ if __name__ == "__main__":
     strat.metrics = ['Transaction costs', 'Net Profit', 'drawown']
     strat.starting_balance = 5000
     run_strategy(strat)
-
-    #SelectStrategy({'class_name': 'TestStrategy', 'code' : TEST_STRAT})
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-    pass
-
-    """
     uvicorn.run(app, host="0.0.0.0", port=8000)
     if len(sys.argv) >1:
         filename = sys.argv[1]
