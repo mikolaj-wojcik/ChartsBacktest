@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'components/strategies_dropdown.dart';
 import 'api/api_service.dart';
+import 'components/files_load.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -108,13 +109,10 @@ class _ParamScreenState extends State<ParamScreen> {
                         },
                       ),
                       Text('Startegy file'),
-                      TextField(
-                        enabled: selectedStrategy == "Own strategy",
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: "Startegy file",
-                        ),
-                      )
+                      FileLoader(onFileSelected: (fil){
+                        // Handle the selected file
+                        print('Selected file: ${fil.path}');
+                      }, enabled: selectedStrategy == "Own strategy"),
                       
                     ],)
                     : const Text('No strategies available.')
