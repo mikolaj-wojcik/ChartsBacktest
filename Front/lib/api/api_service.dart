@@ -30,4 +30,29 @@ class ApiService {
       throw Exception('Failed to load metrics');
     }
   }
+
+  static Future<Map<String,dynamic>?> validateStrategy(String strategyName, String strategyCode) async {
+    try{
+      final response = await http.post(
+        Uri.parse(api_config.Api.validateStrategy),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'strategy_name' : strategyName,'strategy_code': strategyCode}),
+      );
+
+      if (response.statusCode == 200) {
+        // Assuming the response body contains a JSON object with a 'valid' field
+        var result = json.decode(response.body);
+        return result;
+      } else {
+        return {'valid' : false, 'message' : 'Server error: ${response.statusCode}'};
+      }
+    }
+   catch(e){
+      return {
+        'valid': false,
+        'message': 'Connection error: $e',
+      };
+    }
+  }
 }
+
