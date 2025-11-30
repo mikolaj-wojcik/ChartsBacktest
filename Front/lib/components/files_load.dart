@@ -8,9 +8,11 @@ import 'dynamic_params_table.dart';
 
 class FileLoader extends StatefulWidget {
   final Function(File) onFileSelected;
+  final Function(Map<String, dynamic>)? onParametersChanged;
   bool enabled = false;
 
-  FileLoader({super.key, required this.onFileSelected, required this.enabled});
+
+  FileLoader({super.key, required this.onFileSelected, required this.enabled, this.onParametersChanged});
 
   @override
   State<FileLoader> createState() => _FileLoaderState();
@@ -75,6 +77,12 @@ class _FileLoaderState extends State<FileLoader> {
       }
       if (validationResult == true && result!.containsKey('message')){
         parameters = result['message'];
+        if (widget.onParametersChanged != null){
+          widget.onParametersChanged!(parameters!);
+        }
+      }
+      else{
+        widget.onParametersChanged!({});
       }
       
     } catch(e){
@@ -112,28 +120,6 @@ class _FileLoaderState extends State<FileLoader> {
                       (validationResult == true ? Icons.check_box : Icons.error), 
                       color: validationResult == null ? Colors.grey : (validationResult == true ? Colors.green : Colors.red)),
           ),    
-        ],
-      ),
-      Row(
-        children: [
-          validationResult == true && parameters != null
-          ? Container(
-              width: 350,
-              child: DynamicParamsTable(
-                rows: Map<String, String>.fromEntries(
-                  parameters!.entries.map((entry) {
-                    String type = 'string';
-                    if (entry.value is int) {
-                      type = 'int';
-                    } else if (entry.value is double) {
-                      type = 'float';
-                    }
-                    return MapEntry(entry.key, type);
-                  }),
-                ),
-              ),
-            )
-          : Container(),
         ],
       ),
 

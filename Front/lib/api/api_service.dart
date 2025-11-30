@@ -54,5 +54,18 @@ class ApiService {
       };
     }
   }
+
+
+  static Future<Map<String,dynamic>?> fetchStrategyParameters(String strategyName) async {
+    final response = await http.get(Uri.parse(api_config.Api.strategyDict + strategyName));
+
+    if (response.statusCode == 200) {
+      // Assuming the response body contains a JSON object with parameters
+      var result = json.decode(response.body);
+      return result;
+    } else {
+      throw Exception('Failed to load strategy parameters');
+    }
+  }
 }
 

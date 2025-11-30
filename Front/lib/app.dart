@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'components/strategies_dropdown.dart';
 import 'api/api_service.dart';
 import 'components/files_load.dart';
+import 'components/dynamic_params_table.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -33,6 +34,10 @@ class _ParamScreenState extends State<ParamScreen> {
   bool isLoading = false;
   String? errorMessage;
   String? selectedStrategy;
+  Map<String, dynamic>? parameters;
+  static const Map<String, String> _dummyParams = {
+    ' ': 'int',
+  };
   
   Future<void> _loadStrategies() async {
     setState(() {
@@ -79,6 +84,32 @@ class _ParamScreenState extends State<ParamScreen> {
     }
   }
 
+  Future<void> _loadParams() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
+
+    try {
+      // Assuming parameters are fetched based on selected strategy
+      if (selectedStrategy != 'Own strategy') {
+        // Dummy implementation, replace with actual API call if needed
+        final fetchedParams = await ApiService.fetchStrategyParameters(selectedStrategy!);
+        setState(() {
+          parameters = fetchedParams;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = 'Error loading parameters: $e';
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -105,15 +136,44 @@ class _ParamScreenState extends State<ParamScreen> {
                           setState(() {
                             title = 'Selected: $strategy';
                             selectedStrategy = strategy;
-                          });
+                            parameters = null;
+                          }
+                          );
+                          _loadParams();
                         },
                       ),
                       Text('Startegy file'),
-                      FileLoader(onFileSelected: (fil){
+                      Center(child:FileLoader(onFileSelected: (fil){
                         // Handle the selected file
                         print('Selected file: ${fil.path}');
-                      }, enabled: selectedStrategy == "Own strategy"),
-                      
+                      }, enabled: selectedStrategy == "Own strategy", onParametersChanged: (paramMap){
+                        setState(() {
+                          parameters = paramMap.isEmpty ? null : paramMap;
+                        });
+                      },),),
+                      parameters != null
+                    ?
+                      SizedBox(
+                        width: 350,
+                        child: DynamicParamsTable(
+                          rows: Map<String, String>.fromEntries(
+                            
+                            parameters!.entries.map((entry) {
+                              String type = 'string';
+                              if (entry.value is int) {
+                                type = 'int';
+                              } else if (entry.value is double) {
+                                type = 'float';
+                              }
+                              return MapEntry(entry.key, type);
+                            }),
+                          ),
+                        ),
+                      ) : const SizedBox(width: 350,
+                        child: DynamicParamsTable(
+                          rows: _dummyParams,
+                          enabled: false,
+                        ),)
                     ],)
                     : const Text('No strategies available.')
           ),
@@ -128,8 +188,8 @@ class _ParamScreenState extends State<ParamScreen> {
         ),
       ],),*/
       floatingActionButton: FloatingActionButton(
-        onPressed: _loadStrategies,
-        child: const Icon(Icons.refresh)
+        onPressed: (){},
+        child: const Icon(Icons.play_arrow)
       ),
     );
   }
