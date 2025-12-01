@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import '../api/api_service.dart';
-import 'dynamic_params_table.dart';
 
 class FileLoader extends StatefulWidget {
   final Function(File) onFileSelected;
@@ -23,7 +22,7 @@ class _FileLoaderState extends State<FileLoader> {
   String? strategyName;
   String? code;
   Map<String, dynamic>? parameters;
-  bool? validationResult = null;
+  bool? validationResult;
 
   Future<void> _pickFile() async {
     try{

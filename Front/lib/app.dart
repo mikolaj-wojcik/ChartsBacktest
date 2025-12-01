@@ -5,6 +5,7 @@ import 'components/strategies_dropdown.dart';
 import 'api/api_service.dart';
 import 'components/files_load.dart';
 import 'components/dynamic_params_table.dart';
+import 'components/prices_loader.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -34,6 +35,7 @@ class _ParamScreenState extends State<ParamScreen> {
   bool isLoading = false;
   String? errorMessage;
   String? selectedStrategy;
+  List<Map<String, dynamic>>? pricesJson;
   Map<String, dynamic>? parameters;
   static const Map<String, String> _dummyParams = {
     ' ': 'int',
@@ -142,15 +144,25 @@ class _ParamScreenState extends State<ParamScreen> {
                           _loadParams();
                         },
                       ),
+                      const SizedBox(height: 20),
+                      Container(
+                        child: PricesLoader(enabled: true, onPricesLoaded: (prices){
+                          setState(() {
+                            pricesJson = prices;
+                          });
+                        },),
+                      ),
                       Text('Startegy file'),
-                      Center(child:FileLoader(onFileSelected: (fil){
-                        // Handle the selected file
-                        print('Selected file: ${fil.path}');
-                      }, enabled: selectedStrategy == "Own strategy", onParametersChanged: (paramMap){
-                        setState(() {
-                          parameters = paramMap.isEmpty ? null : paramMap;
-                        });
-                      },),),
+                      Container(
+                        child: FileLoader(onFileSelected: (fil){
+                          // Handle the selected file
+                          print('Selected file: ${fil.path}');
+                        }, enabled: selectedStrategy == "Own strategy", onParametersChanged: (paramMap){
+                          setState(() {
+                            parameters = paramMap.isEmpty ? null : paramMap;
+                          });
+                        },),
+                        ),
                       parameters != null
                     ?
                       SizedBox(
