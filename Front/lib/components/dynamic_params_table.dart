@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+typedef DynamicParamsTableState = _DynamicParamsTable;
+
 class DynamicParamsTable extends StatefulWidget {
   final Map<String, String> rows; // {'value1': 'int', 'value2': 'float'}
   final bool enabled;
@@ -68,25 +70,50 @@ class _DynamicParamsTable extends State<DynamicParamsTable> {
   Map<String, Map<String, num?>> getValues() {
     Map<String, Map<String, num?>> values = {};
     
-    controllers.forEach((rowKey, row) {
-      String type = widget.rows[rowKey]!;
-      
-      if (type == 'int') {
-        values[rowKey] = {
-          'min': int.tryParse(row['min']!.text),
-          'max': int.tryParse(row['max']!.text),
-          'step': int.tryParse(row['step']!.text),
-        };
-      } else {
-        values[rowKey] = {
-          'min': double.tryParse(row['min']!.text),
-          'max': double.tryParse(row['max']!.text),
-          'step': double.tryParse(row['step']!.text),
-        };
-      }
-    });
+    try{
+      controllers.forEach((rowKey, row) {
+        String type = widget.rows[rowKey]!;
+        
+        if (row['min']!.text.isEmpty && row['max']!.text.isEmpty && row['step']!.text.isEmpty) {
+          throw Exception("Incomplete input for parameter '$rowKey'.");
+        }
+        if (type == 'int') {
+          values[rowKey] = {
+            'min': int.tryParse(row['min']!.text),
+            'max': int.tryParse(row['max']!.text),
+            'step': int.tryParse(row['step']!.text),
+          };
+        } else {
+          values[rowKey] = {
+            'min': double.tryParse(row['min']!.text),
+            'max': double.tryParse(row['max']!.text),
+            'step': double.tryParse(row['step']!.text),
+          };
+        }
+      });
+    }
+    catch(rowError){
+      _showError(rowError.toString());
+      values = {};
+    }
     
     return values;
+  }
+
+    void _showError(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

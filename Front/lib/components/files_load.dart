@@ -8,10 +8,11 @@ import '../api/api_service.dart';
 class FileLoader extends StatefulWidget {
   final Function(File) onFileSelected;
   final Function(Map<String, dynamic>)? onParametersChanged;
+  final Function(String?)? onCodeValidation;
   bool enabled = false;
 
 
-  FileLoader({super.key, required this.onFileSelected, required this.enabled, this.onParametersChanged});
+  FileLoader({super.key, required this.onFileSelected, required this.enabled, this.onParametersChanged, this.onCodeValidation});
 
   @override
   State<FileLoader> createState() => _FileLoaderState();
@@ -78,10 +79,12 @@ class _FileLoaderState extends State<FileLoader> {
         parameters = result['message'];
         if (widget.onParametersChanged != null){
           widget.onParametersChanged!(parameters!);
+          widget.onCodeValidation!(code!);
         }
       }
       else{
         widget.onParametersChanged!({});
+        widget.onCodeValidation!(null);
       }
       
     } catch(e){
@@ -89,6 +92,7 @@ class _FileLoaderState extends State<FileLoader> {
     }
   }
 
+  
   @override
   Widget build(BuildContext context) {
     return Column(
