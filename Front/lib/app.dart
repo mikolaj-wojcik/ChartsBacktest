@@ -5,6 +5,7 @@ import 'components/files_load.dart';
 import 'components/dynamic_params_table.dart';
 import 'components/prices_loader.dart';
 import 'components/metrics_checkbox.dart';
+import 'components/comission_fields.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -32,6 +33,9 @@ class _ParamScreenState extends State<ParamScreen> {
   bool isLoadingParams = false;
   String? errorMessage;
   String? selectedStrategy;
+  double? startingBalance;
+  double? minComission;
+  double? comissionFactor;
   List<Map<String, dynamic>>? pricesJson;
   Map<String, dynamic>? parameters;
   Map<String, bool> metrics = {};
@@ -121,6 +125,20 @@ class _ParamScreenState extends State<ParamScreen> {
     }
   }
 
+  Future<void> _runStrategy() async {
+    Map<String, Map<String, num?>>?  params = paramsTableKey.currentState?.getValues();
+    if(params == null){return;}
+    if (selectedStrategy == "Own strategy" && (strategyCode == null || strategyCode!.isEmpty)){
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please provide valid strategy code for "Own strategy".')),
+      );
+      return;
+    }
+
+
+
+
+  }
   @override
   void initState() {
     super.initState();
@@ -151,12 +169,19 @@ class _ParamScreenState extends State<ParamScreen> {
                               setState(() {
                                 title = 'Selected: $strategy';
                                 selectedStrategy = strategy;
+                                strategyCode = null;
                               });
                               _loadParams();
                             },
                           ),
                           const SizedBox(height: 20),
-
+                          ComissionFields(onBalanceChanged: (value){
+                            startingBalance = value;},
+                           onMinComissionChanged: (value){
+                            minComission = value;},
+                            onComssionFactorChanged: (value){
+                            comissionFactor = value;},),
+                          const SizedBox(height: 10),
                           // Prices Loader
                           PricesLoader(
                             enabled: true,
@@ -166,11 +191,10 @@ class _ParamScreenState extends State<ParamScreen> {
                               });
                             },
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 10),
 
                           // Strategy File Loader
-                          const Text('Strategy file'),
-                          const SizedBox(height: 8),
+
                           FileLoader(
                             onFileSelected: (fil) {
                               print('Selected file: ${fil.path}');
@@ -255,24 +279,7 @@ class _ParamScreenState extends State<ParamScreen> {
                     )
                   : const Center(child: Text('No strategies available.')),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (paramsTableKey.currentState != null) {
-            final values = paramsTableKey.currentState!.getValues();
-            print('Parameter values: $values');
-            
-            // Get selected metrics
-            List<String> selectedMetrics = metrics.entries
-                .where((entry) => entry.value)
-                .map((entry) => entry.key)
-                .toList();
-            
-            print('Selected metrics: $selectedMetrics');
-            print('Prices: ${pricesJson?.length ?? 0} records');
-            print('Strategy: $selectedStrategy');
-          } else {
-            print('Params table state is null');
-          }
-        },
+        onPressed: () {_runStrategy();},
         child: const Icon(Icons.play_arrow),
       ),
     );

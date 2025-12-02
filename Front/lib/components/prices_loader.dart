@@ -27,7 +27,9 @@ class _PricesLoaderState extends State<PricesLoader> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Text('Prices file:  '),
+        SizedBox(width: 120,
+        child:  Text('Prices file:'),
+        ),
         MouseRegion(
           onEnter: (_) => _showPreview(),
           onExit: (_) => _hidePreview(),

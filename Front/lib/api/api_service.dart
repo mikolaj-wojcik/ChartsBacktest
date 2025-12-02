@@ -67,5 +67,37 @@ class ApiService {
       throw Exception('Failed to load strategy parameters');
     }
   }
+
+  static Future<bool> runStrategy(String strategyName, String strategyCode, List<Map<String, dynamic>> prices,
+  Map<String,dynamic> parameters,
+    double startingBalance, double minComission, double comissionFactor, List<String> metrics,) async {
+    try{
+      final response = await http.post(
+        Uri.parse(api_config.Api.runStartegy),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'strategy_name': strategyName,
+          'strategy_code': strategyCode,
+          'prices': prices,
+          'parameters': parameters,
+          'starting_balance': startingBalance,
+          'min_comission': minComission,
+          'comission_factor': comissionFactor,
+          'metrics': metrics,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // Assuming the response body contains a JSON object with a 'success' field
+        var result = json.decode(response.body);
+        return result['success'];
+      } else {
+        throw Exception('Failed to run strategy');
+      }
+    }
+    catch(e){
+      throw Exception('Connection error: $e');
+    }
+  }
 }
 
