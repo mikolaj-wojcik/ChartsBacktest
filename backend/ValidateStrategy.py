@@ -111,7 +111,6 @@ class ValidateStrategy:
                 self.warnings.append(f"Could not test onTick: {str(e)}")
 
 def validate_parmsDict(definition, actual):
-
     for key in actual.keys():
         if key not in definition.keys():
             return False

@@ -69,8 +69,20 @@ class ApiService {
   }
 
   static Future<bool> runStrategy(String strategyName, String strategyCode, List<Map<String, dynamic>> prices,
-  Map<String,dynamic> parameters,
+  Map<String, String>  parameters,
     double startingBalance, double minComission, double comissionFactor, List<String> metrics,) async {
+
+    String a = json.encode({
+          'strategy_name': strategyName,
+          'strategy_code': strategyCode,
+          'prices': prices,
+          'params': parameters,
+          'starting_balance': startingBalance,
+          'min_commission': minComission,
+          'commission_factor': comissionFactor,
+          'metrics': metrics,
+        });
+        print(a);
     try{
       final response = await http.post(
         Uri.parse(api_config.Api.runStartegy),
@@ -79,10 +91,10 @@ class ApiService {
           'strategy_name': strategyName,
           'strategy_code': strategyCode,
           'prices': prices,
-          'parameters': parameters,
+          'params': parameters,
           'starting_balance': startingBalance,
-          'min_comission': minComission,
-          'comission_factor': comissionFactor,
+          'min_commission': minComission,
+          'commission_factor': comissionFactor,
           'metrics': metrics,
         }),
       );

@@ -44,7 +44,7 @@ class _ComissionFieldsState extends State<ComissionFields> {
           alignment: Alignment.centerLeft,
             child : TextField(  keyboardType: TextInputType.numberWithOptions(decimal: true), // Shows numeric keyboard
               inputFormatters: [
-                DecimalTextInputFormatter(decimalRange: 2)// Only allows digits (0-9)
+                FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))
               ],textAlignVertical: TextAlignVertical.top,
             onChanged: (value) => {balance = double.tryParse(value) ?? 0.0,
               widget.onBalanceChanged(balance!),},
@@ -63,7 +63,7 @@ class _ComissionFieldsState extends State<ComissionFields> {
           alignment: Alignment.centerLeft,
             child : TextFormField(  keyboardType: TextInputType.numberWithOptions(decimal: true), // Shows numeric keyboard
               inputFormatters: [
-                DecimalTextInputFormatter(decimalRange: 2),
+                FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
               ],textAlignVertical: TextAlignVertical.top,
             onChanged: (value) => {minComssion = double.tryParse(value) ?? 0.0,
               widget.onMinComissionChanged(minComssion!),},
@@ -82,7 +82,7 @@ class _ComissionFieldsState extends State<ComissionFields> {
           alignment: Alignment.centerLeft,
             child : TextField(  keyboardType: TextInputType.numberWithOptions(decimal: true), // Shows numeric keyboard
               inputFormatters: [
-                DecimalTextInputFormatter(decimalRange: 2)// Only allows digits (0-9)
+                FilteringTextInputFormatter.allow(RegExp(r'^0\.?\d{0,4}')),
               ],textAlignVertical: TextAlignVertical.top,
             onChanged: (value) => {comissionFactor = double.tryParse(value) ?? 0.0,
               validComissionFator(comissionFactor!) ?
@@ -113,38 +113,3 @@ class _ComissionFieldsState extends State<ComissionFields> {
   }
 }
 
-
-class DecimalTextInputFormatter extends TextInputFormatter {
-  DecimalTextInputFormatter({this.decimalRange}) : assert(decimalRange == null || decimalRange > 0);
-
-  final int? decimalRange;
-
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    TextSelection newSelection = newValue.selection;
-    String truncated = newValue.text;
-
-    if (decimalRange != null) {
-      String value = newValue.text;
-      if (value.contains(".") && value.substring(value.indexOf(".") + 1).length > decimalRange!) {
-        truncated = oldValue.text;
-        newSelection = oldValue.selection;
-      } else if (value == ".") {
-        truncated = "0.";
-        newSelection = newValue.selection.copyWith(
-          baseOffset: math.min(truncated.length, truncated.length + 1),
-          extentOffset: math.min(truncated.length, truncated.length + 1),
-        );
-      }
-      return TextEditingValue(
-        text: truncated,
-        selection: newSelection,
-        composing: TextRange.empty,
-      );
-    }
-    return newValue;
-  }
-}

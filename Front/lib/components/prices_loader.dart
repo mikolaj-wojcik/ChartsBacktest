@@ -61,7 +61,7 @@ class _PricesLoaderState extends State<PricesLoader> {
 
     _overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
-        top: 150, 
+        top: 300, 
         left: 100,
         child: Material(
           elevation: 8,

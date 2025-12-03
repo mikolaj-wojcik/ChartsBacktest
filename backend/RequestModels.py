@@ -14,7 +14,6 @@ class StrategyToRunModel(BaseModel):
     strategy_code: Optional[str] = None
     prices: list[PriceBar]
     params: dict
-    statistics: list[str]
     min_commission: float
     commission_factor: float
     starting_balance: float

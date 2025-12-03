@@ -40,6 +40,7 @@ class _ParamScreenState extends State<ParamScreen> {
   Map<String, dynamic>? parameters;
   Map<String, bool> metrics = {};
   String? strategyCode;
+  String? startegyName;
   final GlobalKey<DynamicParamsTableState> paramsTableKey =
       GlobalKey<DynamicParamsTableState>();
   
@@ -126,16 +127,35 @@ class _ParamScreenState extends State<ParamScreen> {
   }
 
   Future<void> _runStrategy() async {
-    Map<String, Map<String, num?>>?  params = paramsTableKey.currentState?.getValues();
-    if(params == null){return;}
-    if (selectedStrategy == "Own strategy" && (strategyCode == null || strategyCode!.isEmpty)){
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please provide valid strategy code for "Own strategy".')),
-      );
+     if (startingBalance == null || startingBalance! <= 0){
+      _showError('Please fill starting balance before running the strategy.');
       return;
     }
+    if (minComission == null || comissionFactor == null){
+      _showError('Please fill all commission fields before running the strategy.');
+      return;
+    }
+    if (pricesJson == null || pricesJson!.isEmpty){
+      _showError('Please load price data before running the strategy.');
+      return;
+    }
+    if (selectedStrategy == "Own strategy" && (strategyCode == null || strategyCode!.isEmpty)){
+      _showError('Please provide valid strategy code for "Own strategy".');
+      return;
+    }
+    Map<String, String> ?  params = paramsTableKey.currentState?.getValues();
+    if(params == null || params.isEmpty){return;}
 
-
+    await ApiService.runStrategy(
+      selectedStrategy == "Own strategy" ? startegyName! : selectedStrategy!,
+      selectedStrategy == "Own strategy" ? strategyCode! : '',
+      pricesJson!,
+      params,
+      startingBalance!,
+      minComission!,
+      comissionFactor!,
+      metrics.entries.where((entry) => entry.value).map((entry) => entry.key).toList(),
+    );
 
 
   }
@@ -157,7 +177,7 @@ class _ParamScreenState extends State<ParamScreen> {
           : errorMessage != null
               ? Center(child: Text(errorMessage!))
               : strategies != null
-                  ? SingleChildScrollView( // ← KEY FIX: Add scrolling
+                  ? SingleChildScrollView( 
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -205,8 +225,9 @@ class _ParamScreenState extends State<ParamScreen> {
                                 parameters = paramMap.isEmpty ? null : paramMap;
                               });
                             },
-                            onCodeValidation: (code) {
+                            onCodeValidation: (name, code) {
                               setState(() {
+                                startegyName = name;
                                 strategyCode = code;
                               });
                             },
@@ -281,6 +302,21 @@ class _ParamScreenState extends State<ParamScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {_runStrategy();},
         child: const Icon(Icons.play_arrow),
+      ),
+    );
+  }
+void _showError(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
       ),
     );
   }

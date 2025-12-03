@@ -67,8 +67,8 @@ class _DynamicParamsTable extends State<DynamicParamsTable> {
   }
 
   // Get values based on type (int or float)
-  Map<String, Map<String, num?>> getValues() {
-    Map<String, Map<String, num?>> values = {};
+  Map<String, String> getValues() {
+    Map<String, String> values = {};
     
     try{
       controllers.forEach((rowKey, row) {
@@ -78,17 +78,15 @@ class _DynamicParamsTable extends State<DynamicParamsTable> {
           throw Exception("Incomplete input for parameter '$rowKey'.");
         }
         if (type == 'int') {
-          values[rowKey] = {
-            'min': int.tryParse(row['min']!.text),
-            'max': int.tryParse(row['max']!.text),
-            'step': int.tryParse(row['step']!.text),
-          };
+          final min = int.tryParse(row['min']!.text);
+          final max = int.tryParse(row['max']!.text);
+          final step = int.tryParse(row['step']!.text);
+          values[rowKey] = '($min,$max,$step)';
         } else {
-          values[rowKey] = {
-            'min': double.tryParse(row['min']!.text),
-            'max': double.tryParse(row['max']!.text),
-            'step': double.tryParse(row['step']!.text),
-          };
+          final min = double.tryParse(row['min']!.text);
+          final max = double.tryParse(row['max']!.text);
+          final step = double.tryParse(row['step']!.text);
+          values[rowKey] = '($min,$max,$step)';
         }
       });
     }
