@@ -274,8 +274,8 @@ def SelectStrategy(strategy_identifier: Union[str, dict]):
         code = strategy_identifier.get('code', '')
         class_name = strategy_identifier.get('class_name', '')
 
-        if not code or not class_name:
-            return -1,'Dictionary must contain "code" and "class_name" keys'
+        #if not code or not class_name:
+        #    return -1,'Dictionary must contain "code" and "class_name" keys'
 
         return strategy_loader.load_from_string(code, class_name)
 

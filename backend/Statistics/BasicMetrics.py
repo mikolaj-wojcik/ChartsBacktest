@@ -15,24 +15,24 @@ def get_gross_profit(transactions):
     for transaction in transactions:
         if transaction.profit > 0:
             total_profit += transaction.profit
-    return round(total_profit,2)
+    return round(float(total_profit),2)
 
 def get_gross_loss(transactions):
     total_loss = 0
     for transaction in transactions:
         if transaction.profit < 0:
             total_loss += transaction.profit
-    return round(total_loss,2)
+    return round(float(total_loss),2)
 
 def get_profit_factor(transactions):
 
     gross_profit, gross_loss = get_gross(transactions)
-    return round(gross_profit / (abs(gross_loss) if gross_loss != 0 else 1), 2)
+    return float(round(gross_profit / (abs(gross_loss) if gross_loss != 0 else 1), 2))
 
 def get_net_profit(transactions):
     gross_profit, gross_loss = get_gross(transactions)
     comission = get_total_comission(transactions)
-    return round(gross_profit + gross_loss - comission, 2)
+    return float(round(gross_profit + gross_loss - comission, 2))
     pass
 
 

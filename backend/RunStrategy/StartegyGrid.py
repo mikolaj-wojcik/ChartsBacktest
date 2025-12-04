@@ -92,3 +92,11 @@ class single_strategy:
 
     def setStatistics(self, statistics):
         self.statistics = statistics
+
+    def dict(self):
+        return {
+            'name': self.name,
+            'statistics': self.statistics,
+            "balance": self.balance,
+            "transaction_history": [transaction_history.dict() for transaction_history in self.transaction_history],
+        }

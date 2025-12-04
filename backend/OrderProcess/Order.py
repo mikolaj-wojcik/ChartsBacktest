@@ -105,6 +105,17 @@ class ClosedOrder():
         self.profit = profit
         self.balance = balance
 
+    def dict(self):
+        return{
+            "candle": self.candle,
+            "size": self.size,
+            "price": float(self.price),
+            "commission": self.commission,
+            "profit": round(float(self.profit),2),
+            "balance": round(float(self.balance),2),
+        }
+
+
 class Direction(Enum):
     BUY = 'buy'
     SELL = 'sell'

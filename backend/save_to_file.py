@@ -53,3 +53,4 @@ def save_to_file_latex(strategy_results, stats_and_plots,prices, filename):
             print("Unable to find latex, which is necessary to generate pdf.")
 
     pass
+
