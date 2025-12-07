@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'components/strategies_dropdown.dart';
 import 'api/api_service.dart';
@@ -43,6 +45,9 @@ class _ParamScreenState extends State<ParamScreen> {
   String? startegyName;
   final GlobalKey<DynamicParamsTableState> paramsTableKey =
       GlobalKey<DynamicParamsTableState>();
+
+  final GlobalKey<FileLoaderState> fileLoaderKey =
+      GlobalKey<FileLoaderState>();
   
   static const Map<String, String> _dummyParams = {
     ' ': 'int',
@@ -183,17 +188,22 @@ class _ParamScreenState extends State<ParamScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           // Strategy Dropdown
-                          StrategiesDropdown(
+                          StatefulBuilder(builder: ( context, setDropdownState) {
+                          return StrategiesDropdown(
                             startegies: strategies!,
                             onSelected: (String strategy) {
+                              if (strategy == selectedStrategy) return;
                               setState(() {
                                 title = 'Selected: $strategy';
                                 selectedStrategy = strategy;
-                                strategyCode = null;
+                                selectedStrategy != 'Own strategy' ? strategyCode = null : null;
                               });
                               _loadParams();
+                              selectedStrategy != 'Own strategy' ? fileLoaderKey.currentState?.reset(): null;
+
                             },
-                          ),
+                          );
+                        }),
                           const SizedBox(height: 20),
                           ComissionFields(onBalanceChanged: (value){
                             startingBalance = value;},
@@ -216,6 +226,7 @@ class _ParamScreenState extends State<ParamScreen> {
                           // Strategy File Loader
 
                           FileLoader(
+                            key: fileLoaderKey,
                             onFileSelected: (fil) {
                               print('Selected file: ${fil.path}');
                             },
@@ -242,12 +253,13 @@ class _ParamScreenState extends State<ParamScreen> {
                             )
                           else
                             // Parameters Table
-                            parameters != null
-                                ? SizedBox(
+                             SizedBox(
                                     width: 350,
                                     child: DynamicParamsTable(
                                       key: paramsTableKey,
-                                      rows: Map<String, String>.fromEntries(
+                                      rows: parameters != null
+                                          ?
+                                      Map<String, String>.fromEntries(
                                         parameters!.entries.map((entry) {
                                           String type = 'string';
                                           if (entry.value is int) {
@@ -257,14 +269,8 @@ class _ParamScreenState extends State<ParamScreen> {
                                           }
                                           return MapEntry(entry.key, type);
                                         }),
-                                      ),
-                                    ),
-                                  )
-                                : const SizedBox(
-                                    width: 350,
-                                    child: DynamicParamsTable(
-                                      rows: _dummyParams,
-                                      enabled: false,
+                                      ) : _dummyParams,
+                                      enabled: parameters != null,
                                     ),
                                   ),
                           const SizedBox(height: 20),
@@ -284,17 +290,21 @@ class _ParamScreenState extends State<ParamScreen> {
                               thumbVisibility: true, // Always show scrollbar
                              child: SingleChildScrollView(
                                 padding: const EdgeInsets.all(8),
-                                child: MetricsCheckbox(
-                                  metrics: metrics,
-                                  onChanged: (String metric, bool value) {
-                                    setState(() {
-                                      metrics[metric] = value;
-                                    });
-                                  },
+                                child: StatefulBuilder(
+                                  builder: (BuildContext context, StateSetter setMetricsState) {
+                                    return MetricsCheckbox(
+                                      metrics: metrics,
+                                      onChanged: (String metric, bool value) {
+                                        setMetricsState(() {
+                                          metrics[metric] = value;
+                                        });
+                                      },
+                                    );
+                                    },
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
                         ],
                       ),
                     )

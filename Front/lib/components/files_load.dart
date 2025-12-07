@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import '../api/api_service.dart';
 
+typedef FileLoaderState = _FileLoaderState;
+
 class FileLoader extends StatefulWidget {
   final Function(File) onFileSelected;
   final Function(Map<String, dynamic>)? onParametersChanged;
@@ -130,6 +132,15 @@ class _FileLoaderState extends State<FileLoader> {
     );
   }
 
+  void reset() {
+    setState(() {
+      fileName = null;
+      strategyName = null;
+      code = null;
+      parameters = null;
+      validationResult = null;
+    });
+  }
 
   void _showError(String message) {
     showDialog(
