@@ -8,6 +8,7 @@ import 'components/dynamic_params_table.dart';
 import 'components/prices_loader.dart';
 import 'components/metrics_checkbox.dart';
 import 'components/comission_fields.dart';
+import 'screens/results.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -43,6 +44,7 @@ class _ParamScreenState extends State<ParamScreen> {
   Map<String, bool> metrics = {};
   String? strategyCode;
   String? startegyName;
+  bool startegyTestRunning = false;
   final GlobalKey<DynamicParamsTableState> paramsTableKey =
       GlobalKey<DynamicParamsTableState>();
 
@@ -131,7 +133,7 @@ class _ParamScreenState extends State<ParamScreen> {
     }
   }
 
-  Future<void> _runStrategy() async {
+  Future<void> _runStrategy(void Function(void Function()) setBtnState) async {
      if (startingBalance == null || startingBalance! <= 0){
       _showError('Please fill starting balance before running the strategy.');
       return;
@@ -150,8 +152,10 @@ class _ParamScreenState extends State<ParamScreen> {
     }
     Map<String, String> ?  params = paramsTableKey.currentState?.getValues();
     if(params == null || params.isEmpty){return;}
-
-    await ApiService.runStrategy(
+    setBtnState(() {
+      startegyTestRunning = true;
+    });
+    var results = await ApiService.runStrategy(
       selectedStrategy == "Own strategy" ? startegyName! : selectedStrategy!,
       selectedStrategy == "Own strategy" ? strategyCode! : '',
       pricesJson!,
@@ -162,7 +166,16 @@ class _ParamScreenState extends State<ParamScreen> {
       metrics.entries.where((entry) => entry.value).map((entry) => entry.key).toList(),
     );
 
+    setBtnState(() {
+      startegyTestRunning = false;
+    });
 
+    //Navigator.push(
+    //  context,
+   //  MaterialPageRoute(
+    //    builder: (context) => ResultsScreen(results: results),
+   //   ),
+   // );
   }
   @override
   void initState() {
@@ -213,14 +226,17 @@ class _ParamScreenState extends State<ParamScreen> {
                             comissionFactor = value;},),
                           const SizedBox(height: 10),
                           // Prices Loader
+                          StatefulBuilder(builder: ( context, setPricesState) {
+                          return
                           PricesLoader(
                             enabled: true,
                             onPricesLoaded: (prices) {
-                              setState(() {
+                              setPricesState(() {
                                 pricesJson = prices;
                               });
                             },
-                          ),
+                          );
+                          }),
                           const SizedBox(height: 10),
 
                           // Strategy File Loader
@@ -309,11 +325,21 @@ class _ParamScreenState extends State<ParamScreen> {
                       ),
                     )
                   : const Center(child: Text('No strategies available.')),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {_runStrategy();},
-        child: const Icon(Icons.play_arrow),
-      ),
-    );
+      floatingActionButton: StatefulBuilder(builder: (context, setBtnState){
+      return FloatingActionButton(
+        onPressed: startegyTestRunning ? null : () async => await _runStrategy(setBtnState), // Disable when running
+        child: startegyTestRunning
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : const Icon(Icons.play_arrow),
+      );}
+    ));
   }
 void _showError(String message) {
     showDialog(

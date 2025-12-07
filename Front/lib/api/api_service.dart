@@ -1,6 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'api_config.dart' as api_config;
 import 'dart:convert';
+import 'backtest_result.dart';
 
 
 
@@ -68,7 +69,7 @@ class ApiService {
     }
   }
 
-  static Future<bool> runStrategy(String strategyName, String strategyCode, List<Map<String, dynamic>> prices,
+  static Future<List<BacktestResult>> runStrategy(String strategyName, String strategyCode, List<Map<String, dynamic>> prices,
   Map<String, String>  parameters,
     double startingBalance, double minComission, double comissionFactor, List<String> metrics,) async {
 
@@ -82,7 +83,6 @@ class ApiService {
           'commission_factor': comissionFactor,
           'metrics': metrics,
         });
-        print(a);
     try{
       final response = await http.post(
         Uri.parse(api_config.Api.runStartegy),
@@ -102,7 +102,8 @@ class ApiService {
       if (response.statusCode == 200) {
         // Assuming the response body contains a JSON object with a 'success' field
         var result = json.decode(response.body);
-        return result['success'];
+        var results = (result as List).map((res) => BacktestResult(res)).toList();
+        return results;
       } else {
         throw Exception('Failed to run strategy');
       }
