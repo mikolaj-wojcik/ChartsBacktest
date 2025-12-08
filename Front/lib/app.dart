@@ -155,6 +155,7 @@ class _ParamScreenState extends State<ParamScreen> {
     setBtnState(() {
       startegyTestRunning = true;
     });
+    try{
     var results = await ApiService.runStrategy(
       selectedStrategy == "Own strategy" ? startegyName! : selectedStrategy!,
       selectedStrategy == "Own strategy" ? strategyCode! : '',
@@ -165,17 +166,25 @@ class _ParamScreenState extends State<ParamScreen> {
       comissionFactor!,
       metrics.entries.where((entry) => entry.value).map((entry) => entry.key).toList(),
     );
+      if(results.isEmpty){
+        _showError('No results returned from strategy execution.');
+      }
+      else {
+        Navigator.push(
+          context,
+        MaterialPageRoute(
+        builder: (context) => ResultsScreen(results: results, pricesJson: pricesJson),
+          ),
+        );
+      }
+    }
+    catch(e){
+      _showError('Error running strategy: $e');
+    }
 
     setBtnState(() {
       startegyTestRunning = false;
     });
-
-    //Navigator.push(
-    //  context,
-   //  MaterialPageRoute(
-    //    builder: (context) => ResultsScreen(results: results),
-   //   ),
-   // );
   }
   @override
   void initState() {
