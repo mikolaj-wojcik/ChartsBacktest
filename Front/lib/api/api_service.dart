@@ -109,7 +109,7 @@ class ApiService {
       }
     }
     catch(e){
-      throw Exception('Connection error: $e');
+      throw Exception(e);
     }
   }
 }
