@@ -59,7 +59,7 @@ class ResultsTable extends StatelessWidget {
   }
   @override
   Widget build(BuildContext context) {
-    List<BacktestResult> backtestResults = results.map((row) => BacktestResult(row)).toList();
+    List<BacktestResult> backtestResults = results;
 
     return Column(
       children: [

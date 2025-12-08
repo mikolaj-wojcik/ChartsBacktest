@@ -54,7 +54,7 @@ class ExcelExporter {
 
   static Future<bool> exportTransactionsToExcel(List<Transaction> transactions, {String fileName = 'transactions.xlsx'}) async {
     var excel = Excel.createExcel();
-    String sheetName = 'Transactions';
+    String sheetName = 'Sheet1';
     Sheet sheetObject = excel[sheetName];
 
     if (transactions.isEmpty) return false;
