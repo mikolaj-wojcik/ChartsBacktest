@@ -1,9 +1,7 @@
-import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../api/excel.dart';
 import '../api/backtest_result.dart';
-import '../app.dart';
+import 'package:data_table_2/data_table_2.dart';
 
 class ResultsTable extends StatelessWidget {
   final List<BacktestResult> results;
@@ -13,18 +11,30 @@ class ResultsTable extends StatelessWidget {
 
   List<DataColumn> _buildColumns(List<BacktestResult> backtestResults) {
     List<DataColumn> columns = [
-      DataColumn(label: Text('Name')),
-      DataColumn(label: Text('Balance')),
+      DataColumn2(label: Text('Name'),minWidth: 150),
+      DataColumn2(label: Text('Balance')),
     ];
 
     if (backtestResults.isNotEmpty) {
       backtestResults.first.statistics.keys.forEach((key) {
-        columns.add(DataColumn(label: Text(key)));
+        columns.add(DataColumn2(
+          label: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 120),
+            child: Text(
+              key,
+              softWrap: true,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          size: ColumnSize.M,
+        ));
       });
     }
 
-    columns.add(DataColumn(label: Text(''))); // For charts
-    columns.add(DataColumn(label: Text(''))); // For downloading Excel
+    columns.add(DataColumn2(label: Text(''))); // For charts
+    columns.add(DataColumn2(label: Text(''))); // For downloading Excel
 
     return columns;
   }
@@ -47,7 +57,8 @@ class ResultsTable extends StatelessWidget {
         },
       )));
 
-      cells.add(DataCell(IconButton(
+      cells.add(DataCell(
+        IconButton(
         icon: Icon(Icons.download),
         onPressed: () async {
           await ExcelExporter.exportTransactionsToExcel(result.transactions, fileName: '${result.strategyName.name}_transactions.xlsx');
@@ -59,20 +70,34 @@ class ResultsTable extends StatelessWidget {
   }
   @override
   Widget build(BuildContext context) {
-    List<BacktestResult> backtestResults = results;
+    final backtestResults = results;
 
-    return Column(
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              columns: _buildColumns(backtestResults),
-              rows: _buildRows(backtestResults),
-            ),
-          ),
-        ),
-      ],
+    if (backtestResults.isEmpty) {
+      return const Center(child: Text('No results available'));
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final minWidth = backtestResults.first.statistics.length * 100.0 + 200;
+        
+        return 
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                minWidth: constraints.maxWidth,
+                minHeight: constraints.maxHeight,
+              ),
+              child: DataTable2(
+                columnSpacing: 12,
+                horizontalMargin: 12,
+                minWidth: minWidth > constraints.maxWidth ? minWidth : constraints.maxWidth,
+                columns: _buildColumns(backtestResults),
+                rows: _buildRows(backtestResults),
+              ),
+            
+            );
+          
+        
+      },
     );
   }
 }

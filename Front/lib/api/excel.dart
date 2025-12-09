@@ -33,9 +33,9 @@ class ExcelExporter {
       appendRow(sheetObject, rowData);
     }
 
-    if (kIsWeb) {
-      List<int>? fileBytes = excel.save();
-      if (fileBytes != null) {
+   //if (kIsWeb) {
+      List<int>? fileBytes = excel.save(fileName:fileName);
+      /*if (fileBytes != null) {
         // Create blob
         final blob = html.Blob([fileBytes]);
         
@@ -48,7 +48,7 @@ class ExcelExporter {
         // Cleanup
         html.Url.revokeObjectUrl(url);
       }
-    }
+    }*/
   return true;
   }
 
@@ -77,9 +77,9 @@ class ExcelExporter {
 
     }
 
-    if (kIsWeb) {
-      List<int>? fileBytes = excel.save();
-      if (fileBytes != null) {
+    //if (kIsWeb) {
+      List<int>? fileBytes = excel.save(fileName:fileName);
+    /*  if (fileBytes != null) {
         // Create blob
         final blob = html.Blob([fileBytes]);
         
@@ -91,10 +91,10 @@ class ExcelExporter {
         
         // Cleanup
         html.Url.revokeObjectUrl(url);
-      }
+      }*/
 
     
-    }
+   // }
   return true;
   }
 
