@@ -32,4 +32,4 @@ RUN flutter pub get || true
 EXPOSE 8080
 
 # Run in development mode with hot reload
-CMD ["flutter", "run", "-d", "web-server", "--web-hostname", "0.0.0.0", "--web-port", "8080", "--web-allow-expose-url", "--hot","--compilation-time-cap=300"]
+CMD ["flutter", "run", "-d", "web-server", "--web-hostname", "0.0.0.0", "--web-port", "8080", "--web-allow-expose-url", "--hot"]

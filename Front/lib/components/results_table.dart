@@ -3,21 +3,59 @@ import '../api/excel.dart';
 import '../api/backtest_result.dart';
 import 'package:data_table_2/data_table_2.dart';
 
-class ResultsTable extends StatelessWidget {
+class ResultsTable extends StatefulWidget {
   final List<BacktestResult> results;
   final String excelFileName;
 
   ResultsTable({super.key, required this.results, this.excelFileName = 'backtest_results.xlsx'});
 
+  @override
+  State<ResultsTable> createState() => _ResultsTableState();
+}
+
+class _ResultsTableState extends State<ResultsTable> {
+  int? _sortedColumnIndex;
+  bool _isAscending = true;
+
+  late List<BacktestResult> sortedResults;
+
+  @override
+  void initState() {
+    super.initState();
+    sortedResults = List.from(widget.results);
+  }
+
+  void _sort<T>(Comparable<T> Function(BacktestResult d) getField, int columnIndex, bool ascending) {
+    sortedResults.sort((a, b) {
+      final aValue = getField(a);
+      final bValue = getField(b);
+      return ascending ? Comparable.compare(aValue, bValue) : Comparable.compare(bValue, aValue);
+    });
+    setState(() {
+      _sortedColumnIndex = columnIndex;
+      _isAscending = ascending;
+    });
+  }
+
+
   List<DataColumn> _buildColumns(List<BacktestResult> backtestResults) {
     List<DataColumn> columns = [
-      DataColumn2(label: Text('Name'),minWidth: 150),
-      DataColumn2(label: Text('Balance')),
+      DataColumn2(headingRowAlignment: MainAxisAlignment.center, label: Text('Name'),minWidth: 150, ),
+      DataColumn2(headingRowAlignment: MainAxisAlignment.center, label: Text('Balance'), numeric: true,
+          onSort: (columnIndex, ascending) {
+        _sort<num>((d) => d.balance, columnIndex, ascending);
+      }),
     ];
 
-    if (backtestResults.isNotEmpty) {
-      backtestResults.first.statistics.keys.forEach((key) {
+    if (sortedResults.isNotEmpty) {
+      int colIndex = 2;
+      for (var key in sortedResults.first.statistics.keys) {
+        final currentKey = key;
+        final currentIndex = colIndex;
+
+      
         columns.add(DataColumn2(
+          headingRowAlignment: MainAxisAlignment.center,
           label: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 120),
             child: Text(
@@ -29,12 +67,17 @@ class ResultsTable extends StatelessWidget {
             ),
           ),
           size: ColumnSize.M,
+          numeric: true,
+          onSort: (columnIndex, ascending) {
+            _sort<num>((d) => d.statistics[currentKey] ?? 0, currentIndex, ascending);
+          },
         ));
-      });
+        colIndex++;
+      }
     }
 
-    columns.add(DataColumn2(label: Text(''))); // For charts
-    columns.add(DataColumn2(label: Text(''))); // For downloading Excel
+    columns.add(DataColumn2(headingRowAlignment: MainAxisAlignment.center, label: Text(''))); // For charts
+    columns.add(DataColumn2(headingRowAlignment: MainAxisAlignment.center, label: Text(''))); // For downloading Excel
 
     return columns;
   }
@@ -70,7 +113,7 @@ class ResultsTable extends StatelessWidget {
   }
   @override
   Widget build(BuildContext context) {
-    final backtestResults = results;
+    final backtestResults = sortedResults;
 
     if (backtestResults.isEmpty) {
       return const Center(child: Text('No results available'));
@@ -92,6 +135,8 @@ class ResultsTable extends StatelessWidget {
                 minWidth: minWidth > constraints.maxWidth ? minWidth : constraints.maxWidth,
                 columns: _buildColumns(backtestResults),
                 rows: _buildRows(backtestResults),
+                sortColumnIndex: _sortedColumnIndex,
+                sortAscending: _isAscending,
               ),
             
             );
