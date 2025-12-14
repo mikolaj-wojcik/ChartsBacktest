@@ -42,6 +42,7 @@ dependencies:
   flutter_multi_formatter: ^2.13.10
   universal_html: ^2.0.8
   data_table_2: ^2.7.2
+  fl_chart: ^1.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

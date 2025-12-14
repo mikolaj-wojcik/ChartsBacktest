@@ -6,7 +6,7 @@ import '../components/results_table.dart';
 
 class ResultsScreen extends StatelessWidget {
   final List<BacktestResult> results;
-  final List<Map<String, dynamic>>? pricesJson;
+  final List<Map<String, dynamic>> pricesJson;
 
   const ResultsScreen({super.key, required this.results, required this.pricesJson});
 
@@ -24,7 +24,7 @@ class ResultsScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ResultsTable(results: results),
+        child: ResultsTable(results: results, pricesJson: pricesJson,),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

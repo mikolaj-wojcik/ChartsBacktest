@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import '../api/excel.dart';
 import '../api/backtest_result.dart';
 import 'package:data_table_2/data_table_2.dart';
+import '../screens/charts.dart';
 
 class ResultsTable extends StatefulWidget {
   final List<BacktestResult> results;
   final String excelFileName;
+  final List<Map<String, dynamic>> pricesJson;
 
-  ResultsTable({super.key, required this.results, this.excelFileName = 'backtest_results.xlsx'});
+  const ResultsTable({super.key, required this.results, this.excelFileName = 'backtest_results.xlsx', required this.pricesJson});
 
   @override
   State<ResultsTable> createState() => _ResultsTableState();
@@ -96,7 +98,12 @@ class _ResultsTableState extends State<ResultsTable> {
       cells.add(DataCell(IconButton(
         icon: Icon(Icons.show_chart),
         onPressed: () {
-          // Implement chart display logic here
+          Navigator.push(
+          context,
+          MaterialPageRoute(
+          builder: (context) => Charts(strategyName: result.strategyName.name, transactions: result.transactions, pricesJson: widget.pricesJson,),
+          ),
+        );
         },
       )));
 

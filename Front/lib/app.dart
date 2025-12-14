@@ -173,7 +173,7 @@ class _ParamScreenState extends State<ParamScreen> {
         Navigator.push(
           context,
         MaterialPageRoute(
-        builder: (context) => ResultsScreen(results: results, pricesJson: pricesJson),
+        builder: (context) => ResultsScreen(results: results, pricesJson: pricesJson!),
           ),
         );
       }
