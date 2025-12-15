@@ -51,4 +51,7 @@ class Transaction {
     profit = (transactionRow['profit'] as num).toDouble();
     balance = (transactionRow['balance'] as num).toDouble();
   }
+  Transaction.empty(){
+    candle = 0;
+  }
 }
