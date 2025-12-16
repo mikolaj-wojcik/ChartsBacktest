@@ -45,11 +45,11 @@ class Transaction {
 
   Transaction(transactionRow) {
     candle = (transactionRow['candle'] as num).toInt();
-    size = (transactionRow['size'] as num).toDouble();
-    price = (transactionRow['price'] as num).toDouble();
-    commission = (transactionRow['commission'] as num).toDouble();
-    profit = (transactionRow['profit'] as num).toDouble();
-    balance = (transactionRow['balance'] as num).toDouble();
+    size = double.parse(((transactionRow['size'] as num).toDouble()).toStringAsFixed(2));
+    price = double.parse(((transactionRow['price'] as num).toDouble()).toStringAsFixed(2));
+    commission = double.parse(((transactionRow['commission'] as num).toDouble()).toStringAsFixed(2));
+    profit = double.parse(((transactionRow['profit'] as num).toDouble()).toStringAsFixed(2));
+    balance = double.parse(((transactionRow['balance'] as num).toDouble()).toStringAsFixed(2));
   }
   Transaction.empty(){
     candle = 0;

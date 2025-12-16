@@ -25,8 +25,8 @@ class _ChartsState extends State<Charts>{
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: TransactionsChart(transactions: widget.transactions, pricesJson: widget.pricesJson)
-      )
+          child: TransactionsChart(transactions: widget.transactions, pricesJson: widget.pricesJson, transactionCandles: widget.transactions.map((tr) => tr.candle).toList()),
+        ),
       );
   }
 }

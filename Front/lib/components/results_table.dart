@@ -101,7 +101,7 @@ class _ResultsTableState extends State<ResultsTable> {
           Navigator.push(
           context,
           MaterialPageRoute(
-          builder: (context) => Charts(strategyName: result.strategyName.name, transactions: result.transactions, pricesJson: widget.pricesJson,),
+          builder: (context) => Charts(strategyName: result.strategyName.name, transactions: result.transactions, pricesJson: widget.pricesJson),
           ),
         );
         },
