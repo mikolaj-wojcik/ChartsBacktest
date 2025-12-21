@@ -22,47 +22,68 @@ class _PricesLoaderState extends State<PricesLoader> {
   String? fileName;
   List<Map<String, dynamic>>? prices;
   OverlayEntry? _overlayEntry;
+  final GlobalKey _fieldKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Padding(padding: const EdgeInsets.only(left:80),
+    child:
+    Row(
+      mainAxisSize: MainAxisSize.min, 
       children: [
-        SizedBox(width: 120,
-        child:  Text('Prices file:'),
+        SizedBox(width: 80,
+        child:  
+        Text('Prices file:', textAlign: TextAlign.right,),
         ),
-        MouseRegion(
-          onEnter: (_) => _showPreview(),
-          onExit: (_) => _hidePreview(),
-          child: Container(
-            width: 200,
-            height: 30,
-            decoration: BoxDecoration(border: Border.all()),
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Text(
-              fileName ?? ' ',
-              style: TextStyle(
-                color: widget.enabled ? Colors.black : Colors.grey,
+        
+           MouseRegion(
+            onEnter: (_) => _showPreview(),
+            onExit: (_) => _hidePreview(),
+            child: SizedBox(
+              key: _fieldKey,
+              child: 
+              Container(
+                width: 200,
+                height: 30,
+                decoration: BoxDecoration(border: Border.all()),
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  fileName ?? ' ',
+                  style: TextStyle(
+                    color: widget.enabled ? Colors.black : Colors.grey,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              overflow: TextOverflow.ellipsis,
             ),
           ),
-        ),
+        
         IconButton(
           onPressed: widget.enabled ? _loadPrices : null,
           icon: const Icon(Icons.upload_file),
         ),
       ],
-    );
+    ),
+    )
+  ;
   }
 
   void _showPreview() {
     if (prices == null || prices!.isEmpty) return;
 
+    // Get the position of the text field
+    final RenderBox? renderBox = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+    
+    final Offset position = renderBox.localToGlobal(Offset.zero);
+    final double top = position.dy + renderBox.size.height + 8; // 8px below field
+    final double left = position.dx;
+
     _overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
-        top: 300, 
-        left: 100,
+        top: top, 
+        left: left,
         child: Material(
           elevation: 8,
           borderRadius: BorderRadius.circular(8),
@@ -89,10 +110,6 @@ class _PricesLoaderState extends State<PricesLoader> {
                         fontSize: 16,
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.close, size: 20),
-                      onPressed: _hidePreview,
-                    ),
                   ],
                 ),
                 const Divider(),
@@ -115,7 +132,7 @@ class _PricesLoaderState extends State<PricesLoader> {
     _overlayEntry?.remove();
     _overlayEntry = null;
   }
-
+ 
   Widget _buildPreviewTable() {
     int rowsToShow = prices!.length > 5 ? 5 : prices!.length;
     

@@ -9,12 +9,12 @@ typedef FileLoaderState = _FileLoaderState;
 
 class FileLoader extends StatefulWidget {
   final Function(File) onFileSelected;
-  final Function(Map<String, dynamic>)? onParametersChanged;
+  final Function(Map<String, dynamic>) onParametersChanged;
   final Function(String?, String?)? onCodeValidation;
   bool enabled = false;
 
 
-  FileLoader({super.key, required this.onFileSelected, required this.enabled, this.onParametersChanged, this.onCodeValidation});
+  FileLoader({super.key, required this.onFileSelected, required this.enabled, required this.onParametersChanged, this.onCodeValidation});
 
   @override
   State<FileLoader> createState() => _FileLoaderState();
@@ -28,6 +28,9 @@ class _FileLoaderState extends State<FileLoader> {
   bool? validationResult;
 
   Future<void> _pickFile() async {
+    
+
+    
     try{
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -45,6 +48,7 @@ class _FileLoaderState extends State<FileLoader> {
         validationResult = null;
 
       });
+      widget.onParametersChanged({});
 
       //widget.onFileSelected(file);
     }
@@ -97,9 +101,14 @@ class _FileLoaderState extends State<FileLoader> {
   
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [Row(children:[
-        const Text('Strategy name:  '),
+    return Padding(padding: const EdgeInsets.only(left:22),
+    child: 
+    Column(
+      crossAxisAlignment: CrossAxisAlignment.center, 
+      children: [Row(
+        mainAxisSize: MainAxisSize.min,
+        children:[
+        const Text('Strategy name:',textAlign: TextAlign.left,),
         Container(width: 200, height: 30 ,decoration: 
           BoxDecoration(border: Border.all()), 
           alignment: Alignment.centerLeft,
@@ -110,9 +119,16 @@ class _FileLoaderState extends State<FileLoader> {
               contentPadding: EdgeInsets.symmetric(horizontal: 2, vertical: -16),
             ),)),
       ]),
+      SizedBox(height: 5,),
+      Padding(padding: const EdgeInsets.only(left:95),
+      child:
       Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Container(width: 200,height: 30 ,decoration: BoxDecoration(border: Border.all()),alignment: Alignment.centerLeft, child : 
+           const Text('Strategy file:',textAlign: TextAlign.left,),
+          Container(width: 200,height: 30 ,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              decoration: BoxDecoration(border: Border.all()),alignment: Alignment.centerLeft, child : 
             Text((fileName ?? ' ' ), style: TextStyle(color : widget.enabled ? Colors.black : Colors.grey,),)
             ),
           IconButton(
@@ -126,10 +142,10 @@ class _FileLoaderState extends State<FileLoader> {
                       color: validationResult == null ? Colors.grey : (validationResult == true ? Colors.green : Colors.red)),
           ),    
         ],
-      ),
+      ),),
 
       ]
-    );
+    ),);
   }
 
   void reset() {

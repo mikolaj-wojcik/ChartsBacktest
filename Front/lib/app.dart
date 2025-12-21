@@ -208,6 +208,7 @@ class _ParamScreenState extends State<ParamScreen> {
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
+                        //mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           // Strategy Dropdown
                           StatefulBuilder(builder: ( context, setDropdownState) {
@@ -227,16 +228,22 @@ class _ParamScreenState extends State<ParamScreen> {
                           );
                         }),
                           const SizedBox(height: 20),
+                          Padding(padding:  const EdgeInsets.only(right:96),
+                          child:
+                          Column(children: [
+                          Center(child:
                           ComissionFields(onBalanceChanged: (value){
                             startingBalance = value;},
                            onMinComissionChanged: (value){
                             minComission = value;},
                             onComssionFactorChanged: (value){
                             comissionFactor = value;},),
+                          ),
                           const SizedBox(height: 10),
                           // Prices Loader
                           StatefulBuilder(builder: ( context, setPricesState) {
                           return
+                          Center(child: 
                           PricesLoader(
                             enabled: true,
                             onPricesLoaded: (prices) {
@@ -244,12 +251,13 @@ class _ParamScreenState extends State<ParamScreen> {
                                 pricesJson = prices;
                               });
                             },
-                          );
+                          ));
                           }),
+                      
                           const SizedBox(height: 10),
 
                           // Strategy File Loader
-
+                         Center(child:
                           FileLoader(
                             key: fileLoaderKey,
                             onFileSelected: (fil) {
@@ -268,6 +276,9 @@ class _ParamScreenState extends State<ParamScreen> {
                               });
                             },
                           ),
+                         ),]
+                         ),
+                        ),
                           const SizedBox(height: 20),
 
                           // Loading indicator for params
