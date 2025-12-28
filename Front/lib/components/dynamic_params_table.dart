@@ -77,6 +77,9 @@ class _DynamicParamsTable extends State<DynamicParamsTable> {
         if (row['min']!.text.isEmpty && row['max']!.text.isEmpty && row['step']!.text.isEmpty) {
           throw Exception("Incomplete input for parameter '$rowKey'.");
         }
+        if(int.tryParse(row['min']!.text)! > int.tryParse(row['max']!.text)!){
+          throw Exception("Min should be less than Max for parameter '$rowKey'.");
+        }
         if (type == 'int') {
           final min = int.tryParse(row['min']!.text);
           final max = int.tryParse(row['max']!.text);
@@ -88,6 +91,8 @@ class _DynamicParamsTable extends State<DynamicParamsTable> {
           final step = double.tryParse(row['step']!.text);
           values[rowKey] = '($min,$max,$step)';
         }
+
+  
       });
     }
     catch(rowError){

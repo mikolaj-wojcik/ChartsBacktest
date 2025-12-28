@@ -217,7 +217,6 @@ class _ParamScreenState extends State<ParamScreen> {
                             onSelected: (String strategy) {
                               if (strategy == selectedStrategy) return;
                               setState(() {
-                                title = 'Selected: $strategy';
                                 selectedStrategy = strategy;
                                 selectedStrategy != 'Own strategy' ? strategyCode = null : null;
                               });
@@ -365,7 +364,6 @@ void _showError(String message) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Error'),
         content: Text(message),
         actions: [
           TextButton(

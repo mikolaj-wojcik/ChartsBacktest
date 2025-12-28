@@ -1,5 +1,6 @@
+import 'package:flutter/foundation.dart';
 class Api{
-static const String baseUrl = "http://0.0.0.0:8000";
+static const String baseUrl = "http://localhost:8000";
 
 static const String avalibleDefaultStartegies = "$baseUrl/avalible_default_starts";
 static const String metrics = "$baseUrl/metrics";
