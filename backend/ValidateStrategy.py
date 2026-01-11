@@ -1,9 +1,6 @@
 import inspect
 class ValidateStrategy:
-    """
-    Complete validator for user-submitted strategies.
-    Checks methods, attributes, signatures, and return types.
-    """
+
 
     def __init__(self):
         self.errors = []

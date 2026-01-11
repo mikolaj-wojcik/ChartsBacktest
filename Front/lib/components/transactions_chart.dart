@@ -26,24 +26,52 @@ class TransactionsChart extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
           children: [
+             
             // Chart
             LineChart(
               LineChartData(
                 gridData: FlGridData(show: true),
                 titlesData: FlTitlesData(
+                  rightTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  topTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                    showTitles: true,
+                    minIncluded: false,
+                    maxIncluded: false,
+                    reservedSize: 60,
+                    interval: 10,
+                    getTitlesWidget: (value, meta) {
+                        return Text(value.toStringAsFixed(2), style: const TextStyle(fontSize: 15),);
+                    },) ),
                  bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                   showTitles: true,
-                  reservedSize: 30,
+                  reservedSize: 80,
+                  minIncluded: true,
+                  maxIncluded: false,
+                  interval: 5,
                   getTitlesWidget: (value, meta) {
                     int index = value.toInt();
-                    if (index >= 0 && index < pricesJson.length && index%15== 0) {
-                      return Text(
-                        pricesJson[index]['date'] as String,
-                        style: const TextStyle(fontSize: 15),
-                      );
-                    }
-                  return const Text('');
+                      return Column(
+                      children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top:30.0),
+                      ),
+                      Transform.rotate(
+                        angle: 1.5708, // 45 degrees in radians
+                        child: Text(
+                          pricesJson[index-1]['date'] as String,
+                          style: const TextStyle(fontSize: 15),
+                        ),
+                      )
+                  ] 
+          );
+
                   },
                 ),
                 ) ,
@@ -109,6 +137,8 @@ class TransactionsChart extends StatelessWidget {
                 ) : LineTouchData(enabled: false),
               ),
             ),
+               // Legend at top
+            
             // Overlay symbols
           ],
         );

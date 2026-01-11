@@ -240,31 +240,7 @@ class StrategyLoader:
 # ============================================================================
 
 def SelectStrategy(strategy_identifier: Union[str, dict]):
-    """
-    Load strategy from built-in folder, file path, or code string.
 
-    Args:
-        strategy_identifier: Can be:
-            - str: Name of built-in strategy OR path to .py file
-            - dict: {'code': '...', 'class_name': '...'} for code string
-        strategy_loader: Optional StrategyLoader instance
-
-    Returns:
-        Strategy instance or 0 if failed
-
-    Examples:
-        # Load built-in strategy
-        strategy = SelectStrategy("SMAcross")
-
-        # Load from file
-        strategy = SelectStrategy("/path/to/my_strategy.py")
-
-        # Load from code string
-        strategy = SelectStrategy({
-            'code': 'class MyStrategy: ...',
-            'class_name': 'MyStrategy'
-        })
-    """
 
     strategy_loader = StrategyLoader()
 
